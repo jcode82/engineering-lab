@@ -7,7 +7,7 @@ export default function Page() {
       <Hero />
       <Experiments />
 
-      /** TODO:Color palette that should be removed once Tailwind is updated and confirmed!! */
+      {/* TODO:Color palette that should be removed once Tailwind is updated and confirmed!! */}
       <section className="grid grid-cols-5 gap-4 p-8">
         <div className="bg-primary-500 text-white p-4">Primary</div>
         <div className="bg-accent-500 text-white p-4">Accent</div>
