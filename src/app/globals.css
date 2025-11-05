@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Light mode defaults */
+/* ---------------------------------------
+   LIGHT MODE
+--------------------------------------- */
 :root {
   --background: #f9fafb;
   --foreground: #111827;
@@ -11,7 +13,9 @@
   --border: #e5e7eb;
 }
 
-/* Dark mode overrides */
+/* ---------------------------------------
+   DARK MODE
+--------------------------------------- */
 html.dark {
   --background: #0b0c10;
   --foreground: #f9fafb;
@@ -27,6 +31,9 @@ html.dark {
   }
 }
 
+/* ---------------------------------------
+   GLOBAL BODY STYLES
+--------------------------------------- */
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -34,9 +41,34 @@ body {
   font-family: Inter, system-ui, sans-serif;
 }
 
-/* Utility example */
+/* ---------------------------------------
+   UTILITIES
+--------------------------------------- */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* ---------------------------------------
+   TYPOGRAPHY
+--------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans, Inter, system-ui, sans-serif);
+  text-wrap: balance;
+  color: var(--foreground);
+}
+
+/* Body text */
+p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  p {
+    margin-bottom: 1.25rem;
   }
 }

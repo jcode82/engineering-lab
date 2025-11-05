@@ -45,6 +45,7 @@ const config: Config = {
         mono: ["Roboto Mono", "monospace"],
       },
       fontSize: {
+        // Base scale — keep your existing Tailwind-inspired setup
         'xs':  ['0.75rem', { lineHeight: '1rem' }],
         'sm':  ['0.875rem', { lineHeight: '1.25rem' }],
         'base':['1rem', { lineHeight: '1.6' }],
@@ -56,6 +57,14 @@ const config: Config = {
         '5xl': ['3rem', { lineHeight: '1.2' }],
         '6xl': ['3.75rem', { lineHeight: '1.2' }],
         '7xl': ['4.5rem', { lineHeight: '1.15' }],
+
+        // Semantic editorial scale
+        'h1': ['clamp(2.5rem, 6vw, 3.75rem)', { lineHeight: '1.15', fontWeight: '800' }],
+        'h2': ['clamp(2rem, 4vw, 3rem)', { lineHeight: '1.2', fontWeight: '700' }],
+        'h3': ['clamp(1.5rem, 3vw, 2.25rem)', { lineHeight: '1.3', fontWeight: '700' }],
+        'h4': ['1.25rem', { lineHeight: '1.4', fontWeight: '600' }],
+        'h5': ['1.125rem', { lineHeight: '1.5', fontWeight: '600' }],
+        'h6': ['1rem', { lineHeight: '1.6', fontWeight: '500', letterSpacing: '0.02em' }],
       },
       fontWeight: {
         thin: "100",
