@@ -53,8 +53,9 @@ const config: Config = {
         '2xl': ['1.5rem', { lineHeight: '1.9' }],
         '3xl': ['1.875rem', { lineHeight: '2.1rem' }],
         '4xl': ['2.25rem', { lineHeight: '2.4rem' }],
-        '5xl': ['3rem', { lineHeight: '1.1' }],
-        '6xl': ['3.75rem', { lineHeight: '1' }],
+        '5xl': ['3rem', { lineHeight: '1.2' }],
+        '6xl': ['3.75rem', { lineHeight: '1.2' }],
+        '7xl': ['4.5rem', { lineHeight: '1.15' }],
       },
       fontWeight: {
         thin: "100",
