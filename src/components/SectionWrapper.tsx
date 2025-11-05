@@ -17,8 +17,11 @@ export default function SectionWrapper({
 }: SectionWrapperProps) {
   const baseClasses = `
     py-24 md:py-32
-    ${noBorder ? "" : "border-b border-gray-100"}
+    ${noBorder ? "" : "border-b border-[var(--border)]"}
     ${center ? "text-center" : ""}
+    bg-[var(--surface)]
+    dark:bg-transparent
+    transition-colors duration-500
   `;
 
   return (
