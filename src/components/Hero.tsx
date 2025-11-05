@@ -1,10 +1,12 @@
 export default function Hero() {
   return (
-    <section className="flex flex-col items-center justify-center py-32 text-center">
-      <h2 className="text-4xl font-bold mb-4">Building Experiments in Engineering</h2>
-      <p className="text-gray-600 max-w-xl">
-        I explore latency, systems, and creative technology at the edges of web performance.
-      </p>
+    <section className="py-24 text-center">
+      <h1 className="text-5xl md:text-6xl font-extrabold mb-6">
+        Engineering <span className="text-primary-500">Lab</span>
+      </h1>
+      <h2 className="text-xl md:text-2xl font-medium text-gray-600 max-w-2xl mx-auto">
+        Experiments in performance, systems, and creative technology
+      </h2>
     </section>
   );
 }
