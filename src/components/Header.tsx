@@ -13,6 +13,7 @@ export default function Header() {
       {/* Desktop navigation */}
       <nav className="hidden md:flex items-center space-x-4">
         <a href="#projects" className="hover:text-primary-500">Projects</a>
+        <a href="#notes" className="hover:text-primary-500">Notes</a>
         <a href="#about" className="hover:text-primary-500">About</a>
         <a href="#contact" className="hover:text-primary-500">Contact</a>
         <ThemeToggle />
@@ -36,6 +37,7 @@ export default function Header() {
                         rounded-md shadow-lg border border-[var(--border)]
                         flex flex-col space-y-2 p-4 md:hidden">
           <a href="#projects" onClick={() => setOpen(false)}>Projects</a>
+          <a href="#notes" onClick={() => setOpen(false)}>Notes</a>
           <a href="#about" onClick={() => setOpen(false)}>About</a>
           <a href="#contact" onClick={() => setOpen(false)}>Contact</a>
         </div>
