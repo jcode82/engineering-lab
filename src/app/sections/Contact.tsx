@@ -4,9 +4,10 @@ export default function Contact() {
   return (
     <SectionWrapper id="contact">
       <h2 className="text-h2 heading-spacing">Contact</h2>
-      <p className="text-base max-w-2xl mx-auto">
-        Send me an email if you'd like to chat about something. <a href="mailto:jflifestyles@gmail.com">jflifestyles@gmail.com</a>
-      </p>
+        <p className="text-base max-w-2xl mx-auto">
+            {`Send me an email if you'd like to chat about something.`}{" "}
+            <a href="mailto:jflifestyles@gmail.com">jflifestyles@gmail.com</a>
+        </p>
     </SectionWrapper>
   );
 }
