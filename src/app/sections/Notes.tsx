@@ -11,7 +11,7 @@ export default function Notes() {
         <h1 className="text-3xl md:text-4xl font-semibold mb-6">The Science of Latency</h1>
         <p>
           Latency is the hidden heartbeat of every networked system.
-          Measuring it, visualizing it, and learning from it defines the rhythm of performance engineering.
+          Measuring it, visualizing it, and learning from it defines the rhythm of performance engineering. 
         </p>
         <h2 className="text-3xl md:text-3xl font-semibold mb-6">Why It Matters</h2>
         <ul>
