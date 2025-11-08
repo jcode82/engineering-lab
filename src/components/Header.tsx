@@ -1,10 +1,54 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ThemeToggle from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("hero");
+
+  // IDs must match your SectionWrapper ids
+  const sections = ["hero", "projects", "notes", "about", "contact"];
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) setActive(id);
+          });
+        },
+        { rootMargin: "-40% 0px -50% 0px" } // midpoint trigger
+      );
+
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  // Shared link style
+  const linkBase =
+    "transition-colors duration-200 hover:text-primary-500 capitalize";
+
+  const makeLink = (id: string) => (
+    <a
+      key={id}
+      href={`#${id}`}
+      onClick={() => setOpen(false)}
+      className={`${linkBase} ${
+        active === id ? "text-primary-500 font-semibold" : "text-foreground"
+      }`}
+    >
+      {id}
+    </a>
+  );
 
   return (
     <header className="sticky top-0 z-50 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors flex items-center justify-between px-6 py-4">
@@ -12,10 +56,7 @@ export default function Header() {
 
       {/* Desktop navigation */}
       <nav className="hidden md:flex items-center space-x-4">
-        <a href="#projects" className="hover:text-primary-500">Projects</a>
-        <a href="#notes" className="hover:text-primary-500">Notes</a>
-        <a href="#about" className="hover:text-primary-500">About</a>
-        <a href="#contact" className="hover:text-primary-500">Contact</a>
+        {sections.slice(1).map((id) => makeLink(id))}
         <ThemeToggle />
       </nav>
 
@@ -36,10 +77,7 @@ export default function Header() {
         <div className="absolute top-16 right-4 bg-[var(--surface)] 
                         rounded-md shadow-lg border border-[var(--border)]
                         flex flex-col space-y-2 p-4 md:hidden">
-          <a href="#projects" onClick={() => setOpen(false)}>Projects</a>
-          <a href="#notes" onClick={() => setOpen(false)}>Notes</a>
-          <a href="#about" onClick={() => setOpen(false)}>About</a>
-          <a href="#contact" onClick={() => setOpen(false)}>Contact</a>
+          {sections.slice(1).map((id) => makeLink(id))}
         </div>
       )}
     </header>
