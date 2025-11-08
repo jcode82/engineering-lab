@@ -7,7 +7,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+    <header className="sticky top-0 z-50 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors flex items-center justify-between px-6 py-4">
       <h1 className="text-lg font-semibold">Juan Flores</h1>
 
       {/* Desktop navigation */}

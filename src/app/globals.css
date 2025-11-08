@@ -72,3 +72,16 @@ p {
     margin-bottom: 1.25rem;
   }
 }
+
+/* ---------------------------------------
+   Section Wrapper
+--------------------------------------- */
+section::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+}

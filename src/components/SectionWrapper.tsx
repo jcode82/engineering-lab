@@ -1,4 +1,7 @@
+'use client';
 import React from "react";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
 interface SectionWrapperProps {
   id?: string;
@@ -15,8 +18,10 @@ export default function SectionWrapper({
   center = false,
   noBorder = false,
 }: SectionWrapperProps) {
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.15 });
+
   const baseClasses = `
-    py-24 md:py-32
+    relative py-24 md:py-32
     ${noBorder ? "" : "border-b border-[var(--border)]"}
     ${center ? "text-center" : ""}
     bg-[var(--surface)]
@@ -25,12 +30,15 @@ export default function SectionWrapper({
   `;
 
   return (
-    // <section id={id} className={`${baseClasses} ${className}`}>
-    <section
+    <motion.section
       id={id}
+      ref={ref}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className={`${baseClasses} ${className} even:bg-[var(--surface)] odd:bg-transparent`}
     >
       <div className="max-w-4xl mx-auto px-4">{children}</div>
-    </section>
+    </motion.section>
   );
 }
