@@ -5,11 +5,13 @@ import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("hero");
 
   // IDs must match your SectionWrapper ids
   const sections = ["hero", "projects", "notes", "about", "contact"];
 
+  // Highlight active section
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
@@ -23,7 +25,7 @@ export default function Header() {
             if (entry.isIntersecting) setActive(id);
           });
         },
-        { rootMargin: "-40% 0px -50% 0px" } // midpoint trigger
+        { rootMargin: "-40% 0px -50% 0px" }
       );
 
       observer.observe(el);
@@ -33,7 +35,15 @@ export default function Header() {
     return () => observers.forEach((o) => o.disconnect());
   }, []);
 
-  // Shared link style
+  // Detect scroll for fade-blur effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const linkBase =
     "transition-colors duration-200 hover:text-primary-500 capitalize";
 
@@ -51,10 +61,18 @@ export default function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-50 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors flex items-center justify-between px-6 py-4">
+    <header
+      className={`sticky top-0 z-50 border-b border-[var(--border)] transition-all duration-500
+        flex items-center justify-between px-6 py-4
+        ${
+          scrolled
+            ? "bg-[var(--background)]/90 backdrop-blur-md shadow-sm"
+            : "bg-[var(--background)]/50 backdrop-blur-none"
+        }`}
+    >
       <h1 className="text-lg font-semibold">Juan Flores</h1>
 
-      {/* Desktop navigation */}
+      {/* Desktop nav */}
       <nav className="hidden md:flex items-center space-x-4">
         {sections.slice(1).map((id) => makeLink(id))}
         <ThemeToggle />

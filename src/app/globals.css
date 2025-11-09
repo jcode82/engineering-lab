@@ -31,12 +31,13 @@ html.dark {
   --border: #1c1f26; /* softer gray-blue */
 }
 
-@media (prefers-color-scheme: dark) {
+/* this was throwing off the colors in night shift mode */
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 /* ---------------------------------------
    GLOBAL BODY STYLES
