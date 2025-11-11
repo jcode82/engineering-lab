@@ -2,6 +2,7 @@
 
 ## Overview
 This document defines the workflow for developing, testing, and deploying changes to the **Engineering-Lab** project.  
+
 All commits, branches, and pull requests follow a simple, consistent convention so preview builds, Jira tickets, and production deployments stay in sync.
 
 ---
@@ -12,6 +13,7 @@ LAB-##
 
 
 Example:
+
 LAB-39
 LAB-42
 
@@ -60,9 +62,10 @@ https://engineering-lab-git-LAB-##-<username>.vercel.app
 
 ## ✏️ Commit Message Format
 
-<type>: <short description> [LAB-##]
+< type >: < short description > [LAB-##]
 
 Types
+   ```bash
     feat – new feature
     fix – bug fix
     chore – maintenance / refactor
@@ -70,17 +73,20 @@ Types
     docs – documentation update
 
 Examples
+   ```bash
     feat: add MDX content system [LAB-38]
     fix: correct header blur on scroll [LAB-37]
     chore: upgrade dependencies [LAB-40]
 
 🌿 Branch Protection (recommended)
+   ```bash
     Default branch: main
     Require pull request before merge
     Require Vercel build check to pass
     Optional: require 1 approving review
 
 🧠 Notes
+   ```bash
     Only main triggers production deployment.
     Preview branches auto-deploy to their own URLs.
     Never push directly to main.
