@@ -30,6 +30,7 @@ No long prefixes, no slashes — keep it short and traceable.
    git checkout -b LAB-##
 
 2. Work and commit often
+   ```bash
     git add .
     git commit -m "feat: short description [LAB-##]"
     git push -u origin LAB-##
@@ -47,10 +48,12 @@ https://engineering-lab-git-LAB-##-<username>.vercel.app
     Vercel automatically builds & deploys production to https://juanflores.pro
 
 5. Clean up (optional ask before deleting)
+   ```bash
     git branch -d LAB-##
     git push origin --delete LAB-##
 
 6. Tag release (not used)
+   ```bash
     git tag -a vX.Y.Z -m "Route N – description"
     git push origin vX.Y.Z
 
