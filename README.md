@@ -1,4 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 🚀 Contributing
+
+Welcome to **Engineering-Lab**!  
+Before creating or merging branches, please review the workflow guide:
+
+👉 [docs/BRANCHING_WORKFLOW.md](./docs/BRANCHING_WORKFLOW.md)
+
+It covers branch naming, commit conventions, and how Vercel preview deployments work.
+
 
 ## Getting Started
 
