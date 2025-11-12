@@ -54,15 +54,16 @@
 
 import React from "react";
 import SectionWrapper from "@/components/SectionWrapper";
-import { getAllNotes, type NotesMeta } from "@/lib/mdx";
+import { getAllNotes } from "@/lib/mdx";
 import ClientNotes from "@/components/ClientNotes";
+import type { PostMeta } from "@/types";
 
 export default async function Notes() {
-  const notes: NotesMeta[] = getAllNotes();
+  const notes: PostMeta[] = getAllNotes();
 
   // Collect all tags
   const allTags = Array.from(
-    new Set(notes.flatMap((note: any) => note.tags || []))
+    new Set(notes.flatMap((note) => note.tags ?? []))
   );
 
   // Tag filtering UI must be client-side

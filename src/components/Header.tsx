@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ThemeToggle from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
 
@@ -8,10 +8,13 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("hero");
 
-  // IDs must match your SectionWrapper ids
-  const sections = ["hero", "projects", "notes", "about", "contact"];
+  // Memoize section IDs to keep dependency stable
+  const sections = useMemo(
+    () => ["hero", "projects", "notes", "about", "contact"],
+    []
+  );
 
-  // Highlight active section
+  // Highlight active section while scrolling
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
@@ -37,9 +40,7 @@ export default function Header() {
 
   // Detect scroll for fade-blur effect
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -92,9 +93,11 @@ export default function Header() {
 
       {/* Mobile dropdown */}
       {open && (
-        <div className="absolute top-16 right-4 bg-[var(--surface)] 
-                        rounded-md shadow-lg border border-[var(--border)]
-                        flex flex-col space-y-2 p-4 md:hidden">
+        <div
+          className="absolute top-16 right-4 bg-[var(--surface)] 
+                     rounded-md shadow-lg border border-[var(--border)]
+                     flex flex-col space-y-2 p-4 md:hidden"
+        >
           {sections.slice(1).map((id) => makeLink(id))}
         </div>
       )}
