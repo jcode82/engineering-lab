@@ -26,27 +26,56 @@
 //   );
 // }
 
+// =================================================================
+
+// import SectionWrapper from "@/components/SectionWrapper";
+// import { getAllExperiments, type ExperimentMeta } from "@/lib/mdx";
+
+// export default function Experiments() {
+//   const experiments: ExperimentMeta[] = getAllExperiments();
+
+//   return (
+//     <SectionWrapper id="projects">
+//       <h2 className="text-h2 heading-spacing">Experiments</h2>
+//       <div className="grid gap-8 mt-8">
+//         {experiments.map((exp) => (
+//           <article
+//             key={exp.slug}
+//             className="border border-[var(--border)] p-6 rounded-lg hover:border-primary-400 transition-colors"
+//           >
+//             <h3 className="text-h3 mb-2">{exp.title}</h3>
+//             <p className="text-sm text-muted-foreground mb-2">{exp.date}</p>
+//             <p className="text-base">{exp.excerpt}</p>
+//           </article>
+//         ))}
+//       </div>
+//     </SectionWrapper>
+//   );
+// }
+
+// =================================================================
+
+import React from "react";
 import SectionWrapper from "@/components/SectionWrapper";
-import { getAllExperiments, type ExperimentMeta } from "@/lib/mdx";
+import { getAllExperiments } from "@/lib/mdx";;
+import ClientExperiments from "@/components/ClientExperiments";
+import type { PostMeta } from "@/types";
 
-export default function Experiments() {
-  const experiments: ExperimentMeta[] = getAllExperiments();
+export default async function Experiments() {
+  const experiments: PostMeta[] = getAllExperiments();
 
+  // Collect all tags
+  const allTags = Array.from(
+    new Set(experiments.flatMap((exp) => exp.tags ?? []))
+  );
+
+  // Tag filtering UI must be client-side
   return (
     <SectionWrapper id="projects">
       <h2 className="text-h2 heading-spacing">Experiments</h2>
-      <div className="grid gap-8 mt-8">
-        {experiments.map((exp) => (
-          <article
-            key={exp.slug}
-            className="border border-[var(--border)] p-6 rounded-lg hover:border-primary-400 transition-colors"
-          >
-            <h3 className="text-h3 mb-2">{exp.title}</h3>
-            <p className="text-sm text-muted-foreground mb-2">{exp.date}</p>
-            <p className="text-base">{exp.excerpt}</p>
-          </article>
-        ))}
-      </div>
+      {/* Hand off data to a client-side component */}
+      <ClientExperiments experiments={experiments} allTags={allTags} />
     </SectionWrapper>
   );
 }
+
