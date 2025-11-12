@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import type { PostMeta } from "@/types";
 
 const contentRoot = path.join(process.cwd(), "src/content");
 
@@ -12,7 +13,7 @@ export interface ExperimentMeta {
   tags?: string[];
 }
 
-export function getAllExperiments(): ExperimentMeta[] {
+export function getAllExperiments(): PostMeta[] {
   const dir = path.join(contentRoot, "experiments");
   const files = fs.readdirSync(dir).filter((f) => f.endsWith(".mdx"));
 
@@ -20,10 +21,11 @@ export function getAllExperiments(): ExperimentMeta[] {
     const source = fs.readFileSync(path.join(dir, file), "utf8");
     const { data } = matter(source);
     return {
+      type: "experiment",
       slug: file.replace(/\.mdx?$/, ""),
-      title: data.title || "Untitled",
-      date: data.date || "",
-      excerpt: data.excerpt || "",
+      title: data.title,
+      date: data.date,
+      excerpt: data.excerpt,
       tags: data.tags || [],
     };
   });
@@ -44,18 +46,19 @@ export interface NotesMeta {
   tags?: string[];
 }
 
-export function getAllNotes() {
-  const dir = path.join(contentRoot, 'notes');
-  const files = fs.readdirSync(dir).filter(f => f.endsWith('.mdx'));
+export function getAllNotes(): PostMeta[] {
+  const dir = path.join(contentRoot, "notes");
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".mdx"));
 
   return files.map((file) => {
-    const source = fs.readFileSync(path.join(dir, file), 'utf8');
+    const source = fs.readFileSync(path.join(dir, file), "utf8");
     const { data } = matter(source);
     return {
-      slug: file.replace(/\.mdx?$/, ''),
-      title: data.title || "Untitled",
-      date: data.date || "",
-      excerpt: data.excerpt || "",
+      type: "note",
+      slug: file.replace(/\.mdx?$/, ""),
+      title: data.title,
+      date: data.date,
+      excerpt: data.excerpt,
       tags: data.tags || [],
     };
   });
