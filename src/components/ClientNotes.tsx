@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import TagFilter from "@/components/TagFilter";
 import type { PostMeta } from "@/types";
+import PaginatedGrid from "@/components/PaginatedGrid";
 
 interface ClientNotesProps {
   notes: PostMeta[];
@@ -22,8 +23,10 @@ export default function ClientNotes({
     <>
       <TagFilter tags={allTags} activeTag={activeTag} onTagChange={setActiveTag} />
 
-      <div className="grid gap-6 mt-8">
-        {filtered.map((note) => (
+      <PaginatedGrid
+        items={filtered}
+        perPage={6}
+        renderItem={(note) => (
           <article
             key={note.slug}
             className="rounded-xl border border-[var(--border)] bg-[var(--surface)]
@@ -44,8 +47,8 @@ export default function ClientNotes({
               ))}
             </div>
           </article>
-        ))}
-      </div>
+        )}
+      />
     </>
   );
 }

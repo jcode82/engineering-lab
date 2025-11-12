@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import TagFilter from "@/components/TagFilter";
 import type { PostMeta } from "@/types";
+import PaginatedGrid from "@/components/PaginatedGrid";
 
 interface ClientExperimentsProps {
   experiments: PostMeta[];
@@ -21,8 +22,10 @@ export default function ClientExperiments({
   return (
     <>
       <TagFilter tags={allTags} activeTag={activeTag} onTagChange={setActiveTag} />
-      <div className="grid gap-8 mt-8">
-        {filtered.map((exp) => (
+      <PaginatedGrid
+        items={filtered}
+        perPage={6}
+        renderItem={(exp) => (
           <article
             key={exp.slug}
             className="border border-[var(--border)] rounded-lg p-6 hover:border-primary-400 transition-colors"
@@ -41,8 +44,8 @@ export default function ClientExperiments({
               ))}
             </div>
           </article>
-        ))}
-      </div>
+        )}
+      />
     </>
   );
 }
