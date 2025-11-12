@@ -57,15 +57,16 @@
 
 import React from "react";
 import SectionWrapper from "@/components/SectionWrapper";
-import { getAllExperiments, type ExperimentMeta } from "@/lib/mdx";
+import { getAllExperiments } from "@/lib/mdx";;
 import ClientExperiments from "@/components/ClientExperiments";
+import type { PostMeta } from "@/types";
 
 export default async function Experiments() {
-  const experiments: ExperimentMeta[] = getAllExperiments();
+  const experiments: PostMeta[] = getAllExperiments();
 
   // Collect all tags
   const allTags = Array.from(
-    new Set(experiments.flatMap((exp: any) => exp.tags || []))
+    new Set(experiments.flatMap((exp) => exp.tags ?? []))
   );
 
   // Tag filtering UI must be client-side
