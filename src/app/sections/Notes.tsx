@@ -25,29 +25,52 @@
 // }
 
 
+// import SectionWrapper from "@/components/SectionWrapper";
+// import { getAllNotes, type NotesMeta } from "@/lib/mdx";
+
+// export default function Notes() {
+//   const notes: NotesMeta[] = getAllNotes();
+
+//   return (
+//     <SectionWrapper id="notes">
+//       <h2 className="text-h2 heading-spacing">Notes</h2>
+//       <div className="grid gap-6 mt-8">
+//         {notes.map((note) => (
+//           <article
+//             key={note.slug}
+//             className="rounded-xl border border-[var(--border)] bg-[var(--surface)]
+//                        p-5 shadow-sm hover:shadow-md hover:border-primary-400
+//                        transition-all duration-300"
+//           >
+//             <h3 className="text-h3 mb-1">{note.title}</h3>
+//             <p className="text-sm text-muted-foreground mb-3">{note.date}</p>
+//             <p className="text-base">{note.excerpt}</p>
+//           </article>
+//         ))}
+//       </div>
+//     </SectionWrapper>
+//   );
+// }
+
+import React from "react";
 import SectionWrapper from "@/components/SectionWrapper";
 import { getAllNotes, type NotesMeta } from "@/lib/mdx";
+import ClientNotes from "@/components/ClientNotes";
 
-export default function Notes() {
+export default async function Notes() {
   const notes: NotesMeta[] = getAllNotes();
 
+  // Collect all tags
+  const allTags = Array.from(
+    new Set(notes.flatMap((note: any) => note.tags || []))
+  );
+
+  // Tag filtering UI must be client-side
   return (
-    <SectionWrapper id="notes">
+    <SectionWrapper id="projects">
       <h2 className="text-h2 heading-spacing">Notes</h2>
-      <div className="grid gap-6 mt-8">
-        {notes.map((note) => (
-          <article
-            key={note.slug}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface)]
-                       p-5 shadow-sm hover:shadow-md hover:border-primary-400
-                       transition-all duration-300"
-          >
-            <h3 className="text-h3 mb-1">{note.title}</h3>
-            <p className="text-sm text-muted-foreground mb-3">{note.date}</p>
-            <p className="text-base">{note.excerpt}</p>
-          </article>
-        ))}
-      </div>
+      {/* Hand off data to a client-side component */}
+      <ClientNotes notes={notes} allTags={allTags} />
     </SectionWrapper>
   );
 }
