@@ -58,7 +58,6 @@
 import React from "react";
 import SectionWrapper from "@/components/SectionWrapper";
 import { getAllExperiments, type ExperimentMeta } from "@/lib/mdx";
-import TagFilter from "@/components/TagFilter";
 import ClientExperiments from "@/components/ClientExperiments";
 
 export default async function Experiments() {
