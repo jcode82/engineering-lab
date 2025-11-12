@@ -1,12 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import TagFilter from "@/components/TagFilter";
+import type { ExperimentMeta } from "@/types";
 
 export default function ClientExperiments({
   experiments,
   allTags,
 }: {
-  experiments: any[];
+  experiments: ExperimentMeta[];
   allTags: string[];
 }) {
   const [activeTag, setActiveTag] = useState<string | null>(null);

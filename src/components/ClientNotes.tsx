@@ -1,12 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import TagFilter from "@/components/TagFilter";
+import type { NoteMeta } from "@/types";
 
 export default function ClientNotes({
   notes,
   allTags,
 }: {
-  notes: any[];
+  notes: NoteMeta[];
   allTags: string[];
 }) {
   const [activeTag, setActiveTag] = useState<string | null>(null);

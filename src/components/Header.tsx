@@ -33,7 +33,7 @@ export default function Header() {
     });
 
     return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  }, [sections]);
 
   // Detect scroll for fade-blur effect
   useEffect(() => {
