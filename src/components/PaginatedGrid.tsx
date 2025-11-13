@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 
 interface PaginatedGridProps<T> {
   items: T[];
@@ -44,11 +45,16 @@ export default function PaginatedGrid<T>({
 
   const visibleItems = items.slice(0, visible);
 
+  const prefersReduced = useReducedMotionPref();
+
   return (
     <>
       <div className="grid gap-8 mt-8">
         <AnimatePresence mode="popLayout">
-          {visibleItems.map((item, i) => (
+          {visibleItems.map((item, i) =>
+            prefersReduced ? (
+              <div key={i}>{renderItem(item)}</div>
+            ) : (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
