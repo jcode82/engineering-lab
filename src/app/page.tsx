@@ -1,3 +1,5 @@
+"use client";
+
 import Hero from "@/components/Hero";
 import Experiments from "./sections/Experiments";
 // import ArticleTest from "./sections/ArticleTest";

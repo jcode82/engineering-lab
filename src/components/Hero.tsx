@@ -1,3 +1,5 @@
+"use client";
+
 import SectionWrapper from "./SectionWrapper";
 
 export default function Hero() {
