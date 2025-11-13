@@ -25,7 +25,8 @@ export default function ClientNotes({
 
       <PaginatedGrid
         items={filtered}
-        perPage={6}
+        perPage={5}
+        mode="infinite"
         renderItem={(note) => (
           <article
             key={note.slug}
