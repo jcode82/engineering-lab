@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import TagFilter from "@/components/TagFilter";
 import type { PostMeta } from "@/types";
 import PaginatedGrid from "@/components/PaginatedGrid";
+import { usePersistentState } from "@/hooks/usePersistentState";
 
 interface ClientNotesProps {
   notes: PostMeta[];
@@ -13,11 +14,26 @@ export default function ClientNotes({
   notes,
   allTags,
 }: ClientNotesProps) {
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeTag, setActiveTag] = usePersistentState<string | null>(
+    "notes-tag",
+    null
+  );
 
   const filtered = activeTag
     ? notes.filter((note) => note.tags?.includes(activeTag))
     : notes;
+
+  useEffect(() => {
+    const key = "notes-scroll";
+    const saved = window.sessionStorage.getItem(key);
+    if (saved) window.scrollTo(0, parseFloat(saved));
+
+    const handleScroll = () =>
+      window.sessionStorage.setItem(key, window.scrollY.toString());
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
