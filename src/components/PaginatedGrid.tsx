@@ -10,14 +10,15 @@ import React, {
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 
-interface PaginatedGridProps<T> {
+// T MUST at least have slug?: string
+interface PaginatedGridProps<T extends { slug?: string }> {
   items: T[];
   renderItem: (item: T) => ReactNode;
   perPage?: number;
   mode?: "load-more" | "infinite";
 }
 
-export default function PaginatedGrid<T>({
+export default function PaginatedGrid<T extends { slug?: string }>({
   items,
   renderItem,
   perPage = 6,
@@ -29,13 +30,12 @@ export default function PaginatedGrid<T>({
   const hasMore = visible < items.length;
   const prefersReduced = useReducedMotionPref();
 
-  // -----------------------------
-  // Load More (Memoized)
-  // -----------------------------
+  // ----------------------------------------
+  // Load More (memoized + smooth scroll)
+  // ----------------------------------------
   const handleLoadMore = useCallback(() => {
     setVisible((v) => v + perPage);
 
-    // Gentle auto-scroll nudge
     setTimeout(() => {
       if (typeof window !== "undefined") {
         window.scrollBy({ top: 200, behavior: "smooth" });
@@ -43,9 +43,9 @@ export default function PaginatedGrid<T>({
     }, 100);
   }, [perPage]);
 
-  // -----------------------------
-  // Infinite Scroll using IntersectionObserver
-  // -----------------------------
+  // ----------------------------------------
+  // Infinite Scroll Observer
+  // ----------------------------------------
   useEffect(() => {
     if (mode !== "infinite" || !hasMore) return;
 
@@ -72,7 +72,7 @@ export default function PaginatedGrid<T>({
       <div className="grid gap-8 mt-8">
         <AnimatePresence mode="popLayout">
           {visibleItems.map((item, index) => {
-            const key = (item as any).slug ?? index; // stable if MDX file has slug
+            const key = item.slug ? `item-${item.slug}` : `idx-${index}`;
 
             if (prefersReduced) {
               return <div key={key}>{renderItem(item)}</div>;
