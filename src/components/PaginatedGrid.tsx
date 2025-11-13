@@ -1,11 +1,18 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  ReactNode,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 
 interface PaginatedGridProps<T> {
   items: T[];
-  renderItem: (item: T) => React.ReactNode;
+  renderItem: (item: T) => ReactNode;
   perPage?: number;
   mode?: "load-more" | "infinite";
 }
@@ -18,57 +25,80 @@ export default function PaginatedGrid<T>({
 }: PaginatedGridProps<T>) {
   const [visible, setVisible] = useState(perPage);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const hasMore = visible < items.length;
-  
-  //const handleLoadMore = () => setVisible((v) => v + perPage);
-  
-  //optional scroll into view
-  
-  const handleLoadMore = () => {
-        setVisible((v) => v + perPage);
-        setTimeout(() => {
-            window.scrollBy({ top: 200, behavior: "smooth" });
-        }, 100);
-    };
 
-  // Observe bottom for infinite scroll
+  const hasMore = visible < items.length;
+  const prefersReduced = useReducedMotionPref();
+
+  // -----------------------------
+  // Load More (Memoized)
+  // -----------------------------
+  const handleLoadMore = useCallback(() => {
+    setVisible((v) => v + perPage);
+
+    // Gentle auto-scroll nudge
+    setTimeout(() => {
+      if (typeof window !== "undefined") {
+        window.scrollBy({ top: 200, behavior: "smooth" });
+      }
+    }, 100);
+  }, [perPage]);
+
+  // -----------------------------
+  // Infinite Scroll using IntersectionObserver
+  // -----------------------------
   useEffect(() => {
     if (mode !== "infinite" || !hasMore) return;
+
     const observer = new IntersectionObserver(
-      (entries) => entries[0].isIntersecting && handleLoadMore(),
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMore();
+        }
+      },
       { rootMargin: "200px" }
     );
+
     const el = sentinelRef.current;
     if (el) observer.observe(el);
+
     return () => observer.disconnect();
-  }, [mode, hasMore]);
+  }, [mode, hasMore, handleLoadMore]);
 
   const visibleItems = items.slice(0, visible);
 
-  const prefersReduced = useReducedMotionPref();
-
   return (
     <>
+      {/* Grid */}
       <div className="grid gap-8 mt-8">
         <AnimatePresence mode="popLayout">
-          {visibleItems.map((item, i) =>
-            prefersReduced ? (
-              <div key={i}>{renderItem(item)}</div>
-            ) : (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4, delay: i * 0.05, ease: "easeOut" }}
-              layout
-            >
-              {renderItem(item)}
-            </motion.div>
-          ))}
+          {visibleItems.map((item, index) => {
+            const key = (item as any).slug ?? index; // stable if MDX file has slug
+
+            if (prefersReduced) {
+              return <div key={key}>{renderItem(item)}</div>;
+            }
+
+            return (
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.05,
+                  ease: "easeOut",
+                }}
+                layout
+              >
+                {renderItem(item)}
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
       </div>
 
+      {/* Load More Button */}
       {mode === "load-more" && hasMore && (
         <div className="flex justify-center mt-8">
           <button
@@ -82,7 +112,10 @@ export default function PaginatedGrid<T>({
         </div>
       )}
 
-      {mode === "infinite" && hasMore && <div ref={sentinelRef} className="h-8" />}
+      {/* Infinite Scroll Sentinel */}
+      {mode === "infinite" && hasMore && (
+        <div ref={sentinelRef} className="h-10" />
+      )}
     </>
   );
 }
