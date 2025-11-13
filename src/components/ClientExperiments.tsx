@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import TagFilter from "@/components/TagFilter";
 import type { PostMeta } from "@/types";
 import PaginatedGrid from "@/components/PaginatedGrid";
+import { usePersistentState } from "@/hooks/usePersistentState";
 
 interface ClientExperimentsProps {
   experiments: PostMeta[];
@@ -13,11 +14,27 @@ export default function ClientExperiments({
   experiments,
   allTags,
 }: ClientExperimentsProps) {
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeTag, setActiveTag] = usePersistentState<string | null>(
+    "experiments-tag",
+    null
+  );
 
   const filtered = activeTag
     ? experiments.filter((exp) => exp.tags?.includes(activeTag))
     : experiments;
+
+  // Remember scroll position per session
+  useEffect(() => {
+    const key = "experiments-scroll";
+    const saved = window.sessionStorage.getItem(key);
+    if (saved) window.scrollTo(0, parseFloat(saved));
+
+    const handleScroll = () =>
+      window.sessionStorage.setItem(key, window.scrollY.toString());
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
