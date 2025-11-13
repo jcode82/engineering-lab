@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface PaginatedGridProps<T> {
   items: T[];
   renderItem: (item: T) => React.ReactNode;
   perPage?: number;
-  mode?: "load-more" | "infinite"; // NEW
+  mode?: "load-more" | "infinite";
 }
 
 export default function PaginatedGrid<T>({
@@ -17,41 +18,49 @@ export default function PaginatedGrid<T>({
   const [visible, setVisible] = useState(perPage);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const hasMore = visible < items.length;
+  
+  //const handleLoadMore = () => setVisible((v) => v + perPage);
+  
+  //optional scroll into view
+  
+  const handleLoadMore = () => {
+        setVisible((v) => v + perPage);
+        setTimeout(() => {
+            window.scrollBy({ top: 200, behavior: "smooth" });
+        }, 100);
+    };
 
-//const handleLoadMore = () => setVisible((v) => v + perPage);
-
-//optional scroll into view
-const handleLoadMore = () => {
-  setVisible((v) => v + perPage);
-  setTimeout(() => {
-    window.scrollBy({ top: 200, behavior: "smooth" });
-  }, 100);
-};
-
-  // ✅ Infinite scroll observer
+  // Observe bottom for infinite scroll
   useEffect(() => {
     if (mode !== "infinite" || !hasMore) return;
-
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          handleLoadMore();
-        }
-      },
+      (entries) => entries[0].isIntersecting && handleLoadMore(),
       { rootMargin: "200px" }
     );
-
-    const sentinel = sentinelRef.current;
-    if (sentinel) observer.observe(sentinel);
+    const el = sentinelRef.current;
+    if (el) observer.observe(el);
     return () => observer.disconnect();
   }, [mode, hasMore]);
+
+  const visibleItems = items.slice(0, visible);
 
   return (
     <>
       <div className="grid gap-8 mt-8">
-        {items.slice(0, visible).map((item, i) => (
-          <React.Fragment key={i}>{renderItem(item)}</React.Fragment>
-        ))}
+        <AnimatePresence mode="popLayout">
+          {visibleItems.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, delay: i * 0.05, ease: "easeOut" }}
+              layout
+            >
+              {renderItem(item)}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {mode === "load-more" && hasMore && (
