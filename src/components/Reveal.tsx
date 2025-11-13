@@ -2,6 +2,7 @@
 import { motion, useAnimation, Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 
 interface RevealProps {
   children: React.ReactNode;
@@ -18,10 +19,16 @@ export default function Reveal({
 }: RevealProps) {
   const controls = useAnimation();
   const [ref, inView] = useInView({ triggerOnce: once, threshold: 0.2 });
+  const prefersReduced = useReducedMotionPref();
 
   useEffect(() => {
     if (inView) controls.start("visible");
   }, [inView, controls]);
+
+  // Short-circuit motion if reduced-motion
+  if (prefersReduced) {
+    return <div ref={ref}>{children}</div>;
+  }
 
   const defaultVariants: Variants = variants || {
     hidden: { opacity: 0, y: 24, scale: 0.98 },

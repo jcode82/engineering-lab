@@ -93,3 +93,16 @@ section::before {
   height: 1px;
   background: linear-gradient(to right, transparent, var(--border), transparent);
 }
+
+/* ---------------------------------------
+   Prefers Reduced Motion
+--------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
