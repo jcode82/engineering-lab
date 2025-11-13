@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-// import localFont from "next/font/local";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollTracker from "@/components/ScrollTracker";
+import ParallaxBackground from "@/components/ParallaxBackground";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,15 +22,15 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} bg-[radial-gradient(circle_at_50%_50%,_rgba(37,99,235,0.05),_transparent_70%)] 
+      <body className={`${inter.className} bg-[radial-gradient(circle_at_50%_50%,_rgba(37,99,235,0.05),_transparent_70%)] 
               dark:bg-[radial-gradient(circle_at_50%_50%,_rgba(37,99,235,0.15),_transparent_80%)] 
-              text-foreground`}
-      >
-        <Header />
-        <ScrollTracker />
-        <main>{children}</main>
-        <Footer />
+              text-foreground`}>
+        <ParallaxBackground>
+          <Header />
+          <ScrollTracker />
+          <main>{children}</main>
+          <Footer />
+        </ParallaxBackground>
       </body>
     </html>
   );

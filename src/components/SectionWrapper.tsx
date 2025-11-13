@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { useParallaxShift } from "@/hooks/useParallaxShift";
 
 interface SectionWrapperProps {
   id?: string;
@@ -29,6 +30,13 @@ export default function SectionWrapper({
     transition-colors duration-500
   `;
 
+  const offset = useParallaxShift(0.02);
+  const bg = `linear-gradient(
+    180deg,
+    rgba(37,99,235,${0.03 + offset / 3000}),
+    rgba(34,197,94,${0.03 + offset / 4000})
+  )`;
+
   return (
     <motion.section
       id={id}
@@ -37,6 +45,7 @@ export default function SectionWrapper({
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`${baseClasses} ${className} even:bg-[var(--surface)] odd:bg-transparent`}
+      style={{ backgroundImage: bg, backgroundBlendMode: "soft-light" }}
     >
       <div className="max-w-4xl mx-auto px-4">{children}</div>
     </motion.section>
