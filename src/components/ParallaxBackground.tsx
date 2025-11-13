@@ -8,13 +8,12 @@ export default function ParallaxBackground({
 }: {
   children: React.ReactNode;
 }) {
-  const offset = useParallaxShift(0.05);
+  const rawOffset = useParallaxShift(0.05);
+  const offset = rawOffset ?? 0;
 
-  // Prefer reduced motion: disable movement
   const prefersReduced =
     typeof window !== "undefined" &&
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
   const bgStyle: React.CSSProperties = prefersReduced
     ? {
