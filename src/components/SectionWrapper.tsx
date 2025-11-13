@@ -30,7 +30,9 @@ export default function SectionWrapper({
     transition-colors duration-500
   `;
 
-  const offset = useParallaxShift(0.02);
+  const rawOffset = useParallaxShift(0.05);
+  const offset = rawOffset ?? 0; // <-- FIX SAFE VALUE
+  
   const bg = `linear-gradient(
     180deg,
     rgba(37,99,235,${0.03 + offset / 3000}),
