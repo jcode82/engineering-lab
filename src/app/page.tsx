@@ -5,10 +5,11 @@ import About from "./sections/About";
 import Projects from "./sections/Projects";
 import Notes from "./sections/Notes";
 import Contact from "./sections/Contact";
+import ParallaxBackground from "@/components/ParallaxBackground";
 
 export default function Page() {
   return (
-    <main>
+    <ParallaxBackground>
       <Hero />
       <Experiments />
       {/* <ArticleTest /> */}
@@ -16,6 +17,6 @@ export default function Page() {
       <Notes />
       <About />
       <Contact />
-    </main>
+    </ParallaxBackground>
   );
 }
