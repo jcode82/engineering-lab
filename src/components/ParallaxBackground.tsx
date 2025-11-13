@@ -8,15 +8,16 @@ export default function ParallaxBackground({
 }: {
   children: React.ReactNode;
 }) {
+  // Hook must run at top level
+  const rawOffset = useParallaxShift(0.05);
+
   const [bgStyle, setBgStyle] = useState<React.CSSProperties>({
     background:
       "radial-gradient(circle at 50% 50%, rgba(37,99,235,0.07), transparent 70%)",
   });
 
-  // All window-dependent logic must run in effect
   useEffect(() => {
-    const rawOffset = useParallaxShift(0.05);
-
+    // Effect runs only in browser
     const prefersReduced = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)"
     )?.matches;
@@ -31,6 +32,7 @@ export default function ParallaxBackground({
 
     const updateBackground = () => {
       const offset = rawOffset ?? 0;
+
       setBgStyle({
         background: `radial-gradient(
           circle at 50% ${50 + offset * 0.1}%,
@@ -42,10 +44,9 @@ export default function ParallaxBackground({
     };
 
     updateBackground();
-
     window.addEventListener("scroll", updateBackground);
     return () => window.removeEventListener("scroll", updateBackground);
-  }, []);
+  }, [rawOffset]);
 
   return (
     <div style={bgStyle} className="min-h-screen">
