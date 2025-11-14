@@ -1,19 +1,19 @@
-import React from "react";
 import SectionWrapper from "@/components/SectionWrapper";
-import { getAllExperiments } from "@/lib/mdx";;
 import ClientExperiments from "@/components/ClientExperiments";
-import type { PostMeta } from "@/types";
 import Reveal from "@/components/Reveal";
+import type { PostMeta } from "@/types";
 
-export default async function Experiments() {
+import { getAllExperiments } from "@/lib/server/mdx";
+
+export default function Experiments() {
+  // Server-side MDX loading
   const experiments: PostMeta[] = getAllExperiments();
 
-  // Collect all tags
+  // Collect tags
   const allTags = Array.from(
     new Set(experiments.flatMap((exp) => exp.tags ?? []))
   );
 
-  // Tag filtering UI must be client-side
   return (
     <SectionWrapper id="projects">
       <Reveal
@@ -29,9 +29,9 @@ export default async function Experiments() {
       >
         <h2 className="text-h2 heading-spacing">Experiments</h2>
       </Reveal>
-      {/* Hand off data to a client-side component */}
+
+      {/* Data handed off to client-side filtering + pagination */}
       <ClientExperiments experiments={experiments} allTags={allTags} />
     </SectionWrapper>
   );
 }
-

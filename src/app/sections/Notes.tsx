@@ -1,25 +1,26 @@
-import React from "react";
 import SectionWrapper from "@/components/SectionWrapper";
-import { getAllNotes } from "@/lib/mdx";
 import ClientNotes from "@/components/ClientNotes";
-import type { PostMeta } from "@/types";
 import Reveal from "@/components/Reveal";
+import type { PostMeta } from "@/types";
 
-export default async function Notes() {
+import { getAllNotes } from "@/lib/server/mdx";
+
+export default function Notes() {
+  // Server-side MDX loading
   const notes: PostMeta[] = getAllNotes();
 
-  // Collect all tags
+  // Collect tags
   const allTags = Array.from(
     new Set(notes.flatMap((note) => note.tags ?? []))
   );
 
-  // Tag filtering UI must be client-side
   return (
     <SectionWrapper id="notes">
       <Reveal>
         <h2 className="text-h2 heading-spacing">Notes</h2>
       </Reveal>
-      {/* Hand off data to a client-side component */}
+
+      {/* Data handed off to client-side filtering + pagination */}
       <ClientNotes notes={notes} allTags={allTags} />
     </SectionWrapper>
   );

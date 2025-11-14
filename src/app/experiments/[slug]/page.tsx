@@ -1,4 +1,4 @@
-import { getExperiment } from "@/lib/mdx";
+import { getExperiment } from "@/lib/server/mdx";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import SectionWrapper from "@/components/SectionWrapper";
 
