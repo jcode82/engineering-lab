@@ -1,21 +1,34 @@
-import { getNote } from "@/lib/server/mdx";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import SectionWrapper from "@/components/SectionWrapper";
+import ArticleLayout from "@/components/ArticleLayout";
+import { getNote } from "@/lib/server/mdx";
+import type { PostMeta } from "@/types";
 
 interface PageProps {
   params: { slug: string };
 }
 
 export default function NotePage({ params }: PageProps) {
-  const { content, data } = getNote(params.slug);
+  const { slug } = params;
+
+  const { content, data } = getNote(slug);
+
+  const meta: PostMeta = {
+    type: "note",
+    slug,
+    title: (data as any).title ?? "Untitled note",
+    date: (data as any).date ?? "",
+    excerpt: (data as any).excerpt ?? "",
+    tags: ((data as any).tags ?? []) as string[],
+  };
 
   return (
-    <SectionWrapper id={params.slug} center>
-      <article className="prose dark:prose-invert max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-h1 mb-6">{data.title}</h1>
-        <p className="text-sm text-muted-foreground mb-8">{data.date}</p>
-        <MDXRemote source={content} />
-      </article>
-    </SectionWrapper>
+    <ArticleLayout
+      title={meta.title}
+      date={meta.date}
+      tags={meta.tags}
+      kind="note"
+    >
+      <MDXRemote source={content} />
+    </ArticleLayout>
   );
 }
