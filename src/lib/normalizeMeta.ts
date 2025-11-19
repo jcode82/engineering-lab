@@ -1,6 +1,13 @@
 import type { PostMeta } from "@/types";
 
-export function normalizeMeta(raw: any, slug: string): PostMeta {
+interface RawFrontmatter {
+  title?: string;
+  date?: string;
+  excerpt?: string;
+  tags?: string[];
+  type?: "experiment" | "note";
+}
+export function normalizeMeta(raw: RawFrontmatter, slug: string): PostMeta {
   return {
     slug,
     title: raw.title ?? "Untitled",
