@@ -106,3 +106,23 @@ section::before {
   }
 }
 
+/* ---------------------------------------
+   Article Typography
+--------------------------------------- */
+.prose h1, .prose h2, .prose h3 {
+  scroll-margin-top: 6rem;
+}
+
+.prose p:first-of-type {
+  font-size: 1.2rem;
+  line-height: 1.75;
+}
+
+.prose p:first-of-type::first-letter {
+  font-size: 3rem;
+  float: left;
+  line-height: 1;
+  margin-right: 0.2em;
+  font-weight: 600;
+  color: var(--primary-500);
+}
