@@ -1,6 +1,6 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import ArticleLayout from "@/components/ArticleLayout";
-import { getNote } from "@/lib/server/mdx";
+import { getBacklinks, getNote, getReferenceSummaries } from "@/lib/server/mdx";
 import { normalizeMeta } from "@/lib/normalizeMeta";
 
 interface PageProps {
@@ -12,6 +12,8 @@ export default function NotePage({ params }: PageProps) {
 
   const { content, data } = getNote(slug);
   const typedMeta = normalizeMeta(data, slug);
+  const referenceLinks = getReferenceSummaries(typedMeta.references ?? []);
+  const backlinks = getBacklinks(slug);
 
   return (
     <ArticleLayout
@@ -19,6 +21,8 @@ export default function NotePage({ params }: PageProps) {
       date={typedMeta.date}
       tags={typedMeta.tags}
       kind="note"
+      references={referenceLinks}
+      backlinks={backlinks}
     >
       <MDXRemote source={content} />
     </ArticleLayout>
