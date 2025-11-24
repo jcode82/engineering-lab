@@ -6,6 +6,7 @@ interface RawFrontmatter {
   excerpt?: string;
   tags?: string[];
   type?: "experiment" | "note";
+  references?: string[];
 }
 export function normalizeMeta(raw: RawFrontmatter, slug: string): PostMeta {
   return {
@@ -15,5 +16,6 @@ export function normalizeMeta(raw: RawFrontmatter, slug: string): PostMeta {
     excerpt: raw.excerpt ?? "",
     tags: raw.tags ?? [],
     type: raw.type ?? "experiment",
+    references: raw.references ?? [],
   };
 }
