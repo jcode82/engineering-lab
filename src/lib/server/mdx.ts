@@ -75,12 +75,13 @@ async function compileEntry(dir: CollectionDir, slug: string) {
     components: MDXComponents,
     options: {
       mdxOptions: {
-        remarkPlugins: mdxConfig.remarkPlugins ?? [],
-        rehypePlugins: mdxConfig.rehypePlugins ?? [],
+        remarkPlugins: mdxConfig.remarkPlugins,
+        rehypePlugins: mdxConfig.rehypePlugins,
       },
       parseFrontmatter: true,
     },
   });
+
 
   return { content, data: frontmatter, source };
 }
