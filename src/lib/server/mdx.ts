@@ -24,6 +24,11 @@ const DIR_TO_PATH: Record<CollectionDir, string> = {
   notes: "/notes",
 };
 
+function getDateValue(date: string | undefined) {
+  const parsed = Date.parse(date ?? "");
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 // Generic loader for any directory (experiments, notes, etc.)
 function loadCollection(dir: CollectionDir): PostMeta[] {
   const folder = path.join(CONTENT_ROOT, dir);
@@ -35,7 +40,7 @@ function loadCollection(dir: CollectionDir): PostMeta[] {
 
   const files = fs.readdirSync(folder).filter((f) => f.endsWith(".mdx"));
 
-  return files.map((file) => {
+  const items = files.map((file) => {
     const fullPath = path.join(folder, file);
     const raw = fs.readFileSync(fullPath, "utf8");
     const { data } = matter(raw);
@@ -51,6 +56,8 @@ function loadCollection(dir: CollectionDir): PostMeta[] {
       references: data.references || [],
     } satisfies PostMeta;
   });
+
+  return items.sort((a, b) => getDateValue(b.date) - getDateValue(a.date));
 }
 
 // Generic single-file loader
@@ -71,6 +78,20 @@ export const getExperiment = (slug: string) =>
 // Notes
 export const getAllNotes = () => loadCollection("notes");
 export const getNote = (slug: string) => loadSingle("notes", slug);
+
+export function getPrevNext(
+  allPosts: PostMeta[],
+  slug: string
+): { prev: PostMeta | null; next: PostMeta | null } {
+  if (!allPosts.length) return { prev: null, next: null };
+  const index = allPosts.findIndex((post) => post.slug === slug);
+  if (index === -1) return { prev: null, next: null };
+
+  return {
+    prev: allPosts[index + 1] ?? null,
+    next: allPosts[index - 1] ?? null,
+  };
+}
 
 // Shared helpers
 function mapToLinkedPost(meta: PostMeta, dir: CollectionDir): LinkedPostSummary {
@@ -108,4 +129,9 @@ export function getBacklinks(slug: string): LinkedPostSummary[] {
         meta.slug !== slug && (meta.references ?? []).includes(slug)
     )
     .map(({ meta, dir }) => mapToLinkedPost(meta, dir));
+}
+
+export function toLinkedSummary(meta: PostMeta): LinkedPostSummary {
+  const dir = meta.type === "experiment" ? "experiments" : "notes";
+  return mapToLinkedPost(meta, dir as CollectionDir);
 }

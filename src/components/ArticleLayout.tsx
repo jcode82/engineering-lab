@@ -2,14 +2,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { LinkedPostSummary } from "@/types";
-
-type HeadingInfo = {
-  id: string;
-  text: string;
-  level: 2 | 3;
-};
+import type { Heading } from "@/lib/markdown/extractHeadings";
+import TableOfContents from "@/components/TableOfContents";
 
 interface ArticleLayoutProps {
   title: string;
@@ -19,6 +15,9 @@ interface ArticleLayoutProps {
   children: ReactNode;
   references?: LinkedPostSummary[];
   backlinks?: LinkedPostSummary[];
+  headings?: Heading[];
+  prev?: LinkedPostSummary | null;
+  next?: LinkedPostSummary | null;
 }
 
 export default function ArticleLayout({
@@ -29,57 +28,14 @@ export default function ArticleLayout({
   references = [],
   backlinks = [],
   children,
+  headings = [],
+  prev = null,
+  next = null,
 }: ArticleLayoutProps) {
-  const articleRef = useRef<HTMLElement>(null);
-  const [headings, setHeadings] = useState<HeadingInfo[]>([]);
-  const [activeHeading, setActiveHeading] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!articleRef.current) return;
-
-    const nodes = Array.from(
-      articleRef.current.querySelectorAll<HTMLElement>("h2, h3")
-    )
-      .map((el) => ({
-        id: el.id,
-        text: el.textContent?.trim() ?? "",
-        level: el.tagName === "H2" ? 2 : 3,
-      }))
-      .filter(
-        (heading) => heading.id && heading.text.length > 0
-      ) as HeadingInfo[];
-
-    setHeadings(nodes);
-    if (nodes.length > 0 && !activeHeading) {
-      setActiveHeading(nodes[0].id);
-    }
-  }, [children, activeHeading]);
-
-  useEffect(() => {
-    if (!headings.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveHeading(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: "-40% 0px -50% 0px", threshold: [0, 1] }
-    );
-
-    headings.forEach((heading) => {
-      const target = document.getElementById(heading.id);
-      if (target) observer.observe(target);
-    });
-
-    return () => observer.disconnect();
-  }, [headings]);
-
   const hasReferences = references.length > 0;
   const hasBacklinks = backlinks.length > 0;
   const hasSidebar = headings.length > 0;
+  const hasNav = Boolean(prev || next);
 
   return (
     <main className="min-h-screen bg-transparent">
@@ -157,7 +113,6 @@ export default function ArticleLayout({
 
             {/* ARTICLE BODY (MDX) */}
             <article
-              ref={articleRef}
               data-article-root="true"
               className="prose prose-slate dark:prose-invert max-w-none
                      prose-headings:scroll-mt-28
@@ -259,45 +214,58 @@ export default function ArticleLayout({
                 )}
               </div>
             )}
+
+            {hasNav && (
+              <div
+                className="mt-16 pt-8 border-t border-[var(--border)]/70
+                           flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
+              >
+                {prev ? (
+                  <Link
+                    href={prev.href}
+                    className="group rounded-2xl border border-transparent
+                               px-4 py-3 transition hover:border-primary-500/40
+                               hover:bg-primary-500/5"
+                  >
+                    <p className="text-xs uppercase tracking-[0.3em] text-primary-200">
+                      Previous{" "}
+                      <span aria-hidden className="text-primary-300">
+                        ←
+                      </span>
+                    </p>
+                    <p className="text-base font-semibold text-foreground group-hover:text-primary-200">
+                      {prev.title}
+                    </p>
+                  </Link>
+                ) : (
+                  <span />
+                )}
+
+                {next ? (
+                  <Link
+                    href={next.href}
+                    className="group text-right rounded-2xl border border-transparent
+                               px-4 py-3 transition hover:border-primary-500/40
+                               hover:bg-primary-500/5"
+                  >
+                    <p className="text-xs uppercase tracking-[0.3em] text-primary-200">
+                      Next{" "}
+                      <span aria-hidden className="text-primary-300">
+                        →
+                      </span>
+                    </p>
+                    <p className="text-base font-semibold text-foreground group-hover:text-primary-200">
+                      {next.title}
+                    </p>
+                  </Link>
+                ) : (
+                  <span />
+                )}
+              </div>
+            )}
           </div>
 
-          {hasSidebar && (
-            <aside className="hidden lg:block">
-              <div
-                className="sticky top-28 rounded-3xl border border-[var(--border)]/80
-                           bg-[var(--surface)]/70 p-6 shadow-lg shadow-black/5"
-              >
-                <p className="text-xs uppercase tracking-[0.25em] text-primary-200">
-                  On this page
-                </p>
-                <nav className="mt-4 space-y-2 text-sm">
-                  {headings.map((heading) => {
-                    const isActive = activeHeading === heading.id;
-                    return (
-                      <a
-                        key={heading.id}
-                        href={`#${heading.id}`}
-                        className={`block rounded-lg px-3 py-2 transition
-                                    ${
-                                      heading.level === 3
-                                        ? "pl-6 text-[13px]"
-                                        : ""
-                                    }
-                                    ${
-                                      isActive
-                                        ? "bg-primary-500/10 text-primary-200"
-                                        : "text-muted-foreground hover:text-foreground"
-                                    }`}
-                        aria-current={isActive ? "location" : undefined}
-                      >
-                        {heading.text}
-                      </a>
-                    );
-                  })}
-                </nav>
-              </div>
-            </aside>
-          )}
+          {hasSidebar && <TableOfContents headings={headings} />}
         </div>
       </div>
     </main>
