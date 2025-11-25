@@ -1,7 +1,16 @@
-import { MDXRemote } from "next-mdx-remote/rsc";
+import { MDXRemote, type MDXRemoteOptions } from "next-mdx-remote/rsc";
 import ArticleLayout from "@/components/ArticleLayout";
-import { getBacklinks, getNote, getReferenceSummaries } from "@/lib/server/mdx";
+import {
+  getBacklinks,
+  getNote,
+  getReferenceSummaries,
+  getAllNotes,
+  getPrevNext,
+  toLinkedSummary,
+} from "@/lib/server/mdx";
 import { normalizeMeta } from "@/lib/normalizeMeta";
+import { extractHeadings } from "@/lib/markdown/extractHeadings";
+import mdxConfig from "../../../../mdx.config.mjs";
 
 interface PageProps {
   params: { slug: string };
@@ -12,8 +21,13 @@ export default function NotePage({ params }: PageProps) {
 
   const { content, data } = getNote(slug);
   const typedMeta = normalizeMeta(data, slug);
+  const headings = extractHeadings(content);
   const referenceLinks = getReferenceSummaries(typedMeta.references ?? []);
   const backlinks = getBacklinks(slug);
+  const allNotes = getAllNotes();
+  const { prev, next } = getPrevNext(allNotes, slug);
+  const prevLink = prev ? toLinkedSummary(prev) : null;
+  const nextLink = next ? toLinkedSummary(next) : null;
 
   return (
     <ArticleLayout
@@ -21,10 +35,18 @@ export default function NotePage({ params }: PageProps) {
       date={typedMeta.date}
       tags={typedMeta.tags}
       kind="note"
+      headings={headings}
       references={referenceLinks}
       backlinks={backlinks}
+      prev={prevLink}
+      next={nextLink}
     >
-      <MDXRemote source={content} />
+      <MDXRemote
+        source={content}
+        options={{
+          mdxOptions: mdxConfig as MDXRemoteOptions["mdxOptions"],
+        }}
+      />
     </ArticleLayout>
   );
 }

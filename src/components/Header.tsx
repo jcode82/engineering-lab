@@ -71,7 +71,7 @@ export default function Header() {
             : "bg-[var(--background)]/50 backdrop-blur-none"
         }`}
     >
-      <h1 className="text-lg font-semibold">Juan Flores</h1>
+      <h1 className="text-lg font-semibold">Juan <span className="text-primary-500">Flores</span></h1>
 
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center space-x-4">
