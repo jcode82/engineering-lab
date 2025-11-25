@@ -4,8 +4,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 
-/** @type {import('unified').PluggableList} */
-export default {
+const mdxOptions = {
   remarkPlugins: [remarkGfm, remarkFrontmatter],
   rehypePlugins: [
     rehypeSlug,
@@ -18,3 +17,5 @@ export default {
     ],
   ],
 };
+
+export default mdxOptions;
