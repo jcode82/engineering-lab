@@ -1,4 +1,4 @@
-import { MDXRemote, type MDXRemoteOptions } from "next-mdx-remote/rsc";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import ArticleLayout from "@/components/ArticleLayout";
 import {
   getBacklinks,
@@ -48,7 +48,7 @@ export default function ExperimentPage({ params }: PageProps) {
         source={content}
         components={MDXComponents}
         options={{
-          mdxOptions: mdxConfig as MDXRemoteOptions["mdxOptions"],
+          mdxOptions: mdxConfig as any,
         }}
       />
     </ArticleLayout>

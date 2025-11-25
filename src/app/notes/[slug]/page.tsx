@@ -1,4 +1,4 @@
-import { MDXRemote, type MDXRemoteOptions } from "next-mdx-remote/rsc";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import ArticleLayout from "@/components/ArticleLayout";
 import {
   getBacklinks,
@@ -44,7 +44,7 @@ export default function NotePage({ params }: PageProps) {
       <MDXRemote
         source={content}
         options={{
-          mdxOptions: mdxConfig as MDXRemoteOptions["mdxOptions"],
+          mdxOptions: mdxConfig as any,
         }}
       />
     </ArticleLayout>
