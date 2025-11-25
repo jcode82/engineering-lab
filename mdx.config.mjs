@@ -1,3 +1,4 @@
+// mdx.config.mjs
 import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import rehypeSlug from "rehype-slug";
