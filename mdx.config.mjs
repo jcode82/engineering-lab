@@ -1,20 +1,19 @@
-import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
+import remarkFrontmatter from "remark-frontmatter";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypePrettyCode from "rehype-pretty-code";
 
+/** @type {import('unified').PluggableList} */
 export default {
-  remarkPlugins: [remarkGfm],
+  remarkPlugins: [remarkGfm, remarkFrontmatter],
   rehypePlugins: [
-    [rehypePrettyCode, { theme: "github-dark" }],
     rehypeSlug,
+    [rehypeAutolinkHeadings, { behavior: "wrap" }],
     [
-      rehypeAutolinkHeadings,
+      rehypePrettyCode,
       {
-        behavior: "append",
-        properties: {
-          className: ["anchor-link"],
-        },
+        theme: "github-dark",
       },
     ],
   ],
