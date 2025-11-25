@@ -5,18 +5,22 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 
+/** @type {import('unified').PluggableList} */
+const remarkPlugins = [remarkGfm, remarkFrontmatter];
+
+/** @type {import('unified').PluggableList} */
+const rehypePlugins = [
+  rehypeSlug,
+  [rehypeAutolinkHeadings, { behavior: "wrap" }],
+  () =>
+    rehypePrettyCode({
+      theme: "github-dark",
+    }),
+];
+
 const mdxOptions = {
-  remarkPlugins: [remarkGfm, remarkFrontmatter],
-  rehypePlugins: [
-    rehypeSlug,
-    [rehypeAutolinkHeadings, { behavior: "wrap" }],
-    [
-      rehypePrettyCode,
-      {
-        theme: "github-dark",
-      },
-    ],
-  ],
+  remarkPlugins,
+  rehypePlugins,
 };
 
 export default mdxOptions;
