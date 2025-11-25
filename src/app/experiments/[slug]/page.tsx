@@ -1,4 +1,3 @@
-import { MDXRemote } from "next-mdx-remote/rsc";
 import ArticleLayout from "@/components/ArticleLayout";
 import {
   getBacklinks,
@@ -9,22 +8,19 @@ import {
   toLinkedSummary,
 } from "@/lib/server/mdx";
 import { normalizeMeta } from "@/lib/normalizeMeta";
-import { MDXComponents } from "@/components/mdx/MDXComponents";
 import { extractHeadings } from "@/lib/markdown/extractHeadings";
-import mdxConfig from "../../../../mdx.config.mjs";
 
 interface PageProps {
   params: { slug: string };
 }
 
 // Server component – no "use client"
-export default function ExperimentPage({ params }: PageProps) {
+export default async function ExperimentPage({ params }: PageProps) {
   const { slug } = params;
 
-  // Your loader returns { content, data }
-  const { content, data } = getExperiment(slug);
+  const { content, data, source } = await getExperiment(slug);
   const typedMeta = normalizeMeta(data, slug);
-  const headings = extractHeadings(content);
+  const headings = extractHeadings(source);
   const referenceLinks = getReferenceSummaries(typedMeta.references ?? []);
   const backlinks = getBacklinks(slug);
   const allExperiments = getAllExperiments();
@@ -44,13 +40,7 @@ export default function ExperimentPage({ params }: PageProps) {
       prev={prevLink}
       next={nextLink}
     >
-      <MDXRemote
-        source={content}
-        components={MDXComponents}
-        options={{
-          mdxOptions: mdxConfig as any,
-        }}
-      />
+      {content}
     </ArticleLayout>
   );
 }
