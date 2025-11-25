@@ -1,4 +1,3 @@
-import { MDXRemote } from "next-mdx-remote/rsc";
 import ArticleLayout from "@/components/ArticleLayout";
 import {
   getBacklinks,
@@ -10,18 +9,17 @@ import {
 } from "@/lib/server/mdx";
 import { normalizeMeta } from "@/lib/normalizeMeta";
 import { extractHeadings } from "@/lib/markdown/extractHeadings";
-import mdxConfig from "../../../../mdx.config.mjs";
 
 interface PageProps {
   params: { slug: string };
 }
 
-export default function NotePage({ params }: PageProps) {
+export default async function NotePage({ params }: PageProps) {
   const { slug } = params;
 
-  const { content, data } = getNote(slug);
+  const { content, data, source } = await getNote(slug);
   const typedMeta = normalizeMeta(data, slug);
-  const headings = extractHeadings(content);
+  const headings = extractHeadings(source);
   const referenceLinks = getReferenceSummaries(typedMeta.references ?? []);
   const backlinks = getBacklinks(slug);
   const allNotes = getAllNotes();
@@ -41,12 +39,7 @@ export default function NotePage({ params }: PageProps) {
       prev={prevLink}
       next={nextLink}
     >
-      <MDXRemote
-        source={content}
-        options={{
-          mdxOptions: mdxConfig as any,
-        }}
-      />
+      {content}
     </ArticleLayout>
   );
 }

@@ -3,7 +3,10 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { compileMDX } from "next-mdx-remote/rsc";
 import type { LinkedPostSummary, PostMeta } from "@/types";
+import { MDXComponents } from "@/components/mdx/MDXComponents";
+import mdxConfig from "../../../mdx.config.mjs";
 
 // Enforce server-only execution
 export const runtime = "nodejs"; // Next.js hint
@@ -60,12 +63,23 @@ function loadCollection(dir: CollectionDir): PostMeta[] {
   return items.sort((a, b) => getDateValue(b.date) - getDateValue(a.date));
 }
 
-// Generic single-file loader
-function loadSingle(dir: string, slug: string) {
+function loadRawEntry(dir: string, slug: string) {
   const fullPath = path.join(CONTENT_ROOT, dir, `${slug}.mdx`);
-  const raw = fs.readFileSync(fullPath, "utf8");
-  const { data, content } = matter(raw);
-  return { data, content };
+  return fs.readFileSync(fullPath, "utf8");
+}
+
+async function compileEntry(dir: CollectionDir, slug: string) {
+  const source = loadRawEntry(dir, slug);
+  const { content, frontmatter } = await compileMDX({
+    source,
+    components: MDXComponents,
+    options: {
+      mdxOptions: mdxConfig,
+      parseFrontmatter: true,
+    },
+  });
+
+  return { content, data: frontmatter, source };
 }
 
 // --- PUBLIC APIS ---
@@ -73,11 +87,11 @@ function loadSingle(dir: string, slug: string) {
 // Experiments
 export const getAllExperiments = () => loadCollection("experiments");
 export const getExperiment = (slug: string) =>
-  loadSingle("experiments", slug);
+  compileEntry("experiments", slug);
 
 // Notes
 export const getAllNotes = () => loadCollection("notes");
-export const getNote = (slug: string) => loadSingle("notes", slug);
+export const getNote = (slug: string) => compileEntry("notes", slug);
 
 export function getPrevNext(
   allPosts: PostMeta[],
