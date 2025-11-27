@@ -40,20 +40,22 @@ export default function Hero() {
             </p>
         </Reveal>
 
-        <div className="mt-10 flex gap-4">
-          <a
-            href="/#projects"
-            className="px-6 py-3 rounded-lg bg-primary-500 text-white font-semibold shadow-lg shadow-primary-500/30 transition hover:bg-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
-          >
-            Explore
-          </a>
-          <a
-            href="/#about"
-            className="px-6 py-3 rounded-lg border border-[var(--border)] text-foreground transition hover:bg-black/5 dark:border-white/40 dark:text-white dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
-          >
-            About Me
-          </a>
-        </div>
+        <Reveal>
+          <div className="mt-10 flex gap-4">
+            <a
+              href="/#projects"
+              className="px-6 py-3 rounded-lg bg-primary-500 text-white font-semibold shadow-lg shadow-primary-500/30 transition hover:bg-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
+            >
+              Explore
+            </a>
+            <a
+              href="/#about"
+              className="px-6 py-3 rounded-lg border border-[var(--border)] text-foreground transition hover:bg-black/5 dark:border-white/40 dark:text-white dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
+            >
+              About Me
+            </a>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
