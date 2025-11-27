@@ -3,15 +3,27 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { LinkedPostSummary } from "@/types";
+import type { LinkedPostSummary, PostKind } from "@/types";
 import type { Heading } from "@/lib/markdown/extractHeadings";
 import TableOfContents from "@/components/TableOfContents";
+
+const KIND_LABELS: Record<PostKind, string> = {
+  experiment: "LAB EXPERIMENT",
+  note: "LAB NOTE",
+  "case-study": "CASE STUDY",
+};
+
+const TYPE_LABELS: Record<PostKind, string> = {
+  experiment: "Lab Experiment",
+  note: "Lab Note",
+  "case-study": "Case Study",
+};
 
 interface ArticleLayoutProps {
   title: string;
   date?: string;
   tags?: string[];
-  kind?: "experiment" | "note";
+  kind?: PostKind;
   children: ReactNode;
   references?: LinkedPostSummary[];
   backlinks?: LinkedPostSummary[];
@@ -65,12 +77,12 @@ export default function ArticleLayout({
                            px-3 py-1 rounded-full 
                            bg-primary-500/10 text-primary-400
                            border border-primary-500/20"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary-400" />
-                    <span className="uppercase tracking-[0.15em]">
-                      {kind === "experiment" ? "LAB EXPERIMENT" : "LAB NOTE"}
-                    </span>
-                  </div>
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary-400" />
+                      <span className="uppercase tracking-[0.15em]">
+                        {KIND_LABELS[kind]}
+                      </span>
+                    </div>
                 )}
 
                 {/* TITLE */}
@@ -167,9 +179,7 @@ export default function ArticleLayout({
                               {ref.title}
                             </span>
                             <span className="text-[12px] uppercase tracking-[0.2em] text-muted-foreground">
-                              {ref.type === "experiment"
-                                ? "Lab Experiment"
-                                : "Lab Note"}
+                              {TYPE_LABELS[ref.type]}
                             </span>
                           </Link>
                         </li>
@@ -202,9 +212,7 @@ export default function ArticleLayout({
                               {ref.title}
                             </span>
                             <span className="text-[12px] uppercase tracking-[0.2em] text-muted-foreground">
-                              {ref.type === "experiment"
-                                ? "Lab Experiment"
-                                : "Lab Note"}
+                              {TYPE_LABELS[ref.type]}
                             </span>
                           </Link>
                         </li>

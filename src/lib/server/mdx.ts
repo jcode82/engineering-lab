@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
-import type { LinkedPostSummary, PostMeta } from "@/types";
+import type { LinkedPostSummary, PostKind, PostMeta } from "@/types";
 import { MDXComponents } from "@/components/mdx/MDXComponents";
 import mdxConfig from "../../../mdx.config.mjs";
 
@@ -14,17 +14,25 @@ export const dynamic = "force-static";
 
 const ROOT = process.cwd();
 const CONTENT_ROOT = path.join(ROOT, "src/content");
-type CollectionDir = "experiments" | "notes";
-const COLLECTIONS: CollectionDir[] = ["experiments", "notes"];
+type CollectionDir = "experiments" | "notes" | "case-studies";
+const COLLECTIONS: CollectionDir[] = ["experiments", "notes", "case-studies"];
 
 const DIR_TO_TYPE: Record<CollectionDir, PostMeta["type"]> = {
   experiments: "experiment",
   notes: "note",
+  "case-studies": "case-study",
 };
 
 const DIR_TO_PATH: Record<CollectionDir, string> = {
   experiments: "/experiments",
   notes: "/notes",
+  "case-studies": "/case-studies",
+};
+
+const TYPE_TO_DIR: Record<PostKind, CollectionDir> = {
+  experiment: "experiments",
+  note: "notes",
+  "case-study": "case-studies",
 };
 
 function getDateValue(date: string | undefined) {
@@ -49,14 +57,16 @@ function loadCollection(dir: CollectionDir): PostMeta[] {
     const { data } = matter(raw);
 
     const slug = file.replace(/\.mdx?$/, "");
+    const excerpt = data.excerpt ?? data.summary ?? "";
     return {
       slug: file.replace(/\.mdx?$/, ""),
       title: data.title ?? slug,
       date: data.date ?? "",
-      excerpt: data.excerpt ?? "",
+      excerpt,
       tags: data.tags || [],
       type: DIR_TO_TYPE[dir],
       references: data.references || [],
+      status: data.status,
     } satisfies PostMeta;
   });
 
@@ -96,6 +106,11 @@ export const getExperiment = (slug: string) =>
 // Notes
 export const getAllNotes = () => loadCollection("notes");
 export const getNote = (slug: string) => compileEntry("notes", slug);
+
+// Case studies
+export const getAllCaseStudies = () => loadCollection("case-studies");
+export const getCaseStudy = (slug: string) =>
+  compileEntry("case-studies", slug);
 
 export function getPrevNext(
   allPosts: PostMeta[],
@@ -150,6 +165,6 @@ export function getBacklinks(slug: string): LinkedPostSummary[] {
 }
 
 export function toLinkedSummary(meta: PostMeta): LinkedPostSummary {
-  const dir = meta.type === "experiment" ? "experiments" : "notes";
-  return mapToLinkedPost(meta, dir as CollectionDir);
+  const dir = TYPE_TO_DIR[meta.type];
+  return mapToLinkedPost(meta, dir);
 }
