@@ -14,6 +14,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Engineering Lab",
   description: "Juan Flores — Experiments in performance and systems",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", rel: "icon" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
