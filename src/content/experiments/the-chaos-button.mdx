@@ -1,0 +1,60 @@
+---
+title: "The Chaos Button: Fault Injection for Mere Mortals"
+date: "2025-11-27"
+excerpt: "What happens when you intentionally break your own app? Turns out—clarity, confidence, and better engineering instincts."
+tags: ["chaos", "resilience", "testing"]
+references: []
+---
+
+import { ExperimentHeader } from "@/components/experiments/ExperimentHeader";
+import { CodeBlock } from "@/components/ui/CodeBlock";
+
+<ExperimentHeader />
+
+# The Chaos Button: Fault Injection for Mere Mortals
+
+Software breaks.  
+Sometimes because of traffic spikes, network hiccups, or the cosmic will of misconfigured YAML.
+
+But what happens when you **break your app on purpose**?
+
+I added a tiny Chaos API to this engineering lab to answer that:
+
+<CodeBlock
+  language="ts"
+  code={`export async function getChaos() {
+  const roll = Math.random();
+
+  if (roll < 0.7) return { status: 200, message: "All good." };
+  if (roll < 0.9) throw new Error("Random Server Explosion");
+  
+  await new Promise(r => setTimeout(r, 1500));
+  throw new Error("Timeout");
+}`}
+/>
+
+It’s silly, tiny, and brilliant.
+
+## Why Inject Chaos?
+
+Chaos testing teaches you things that perfect days never reveal:
+
+* Your UI should handle failure with grace
+* Your retry logic should be real, not theoretical
+* Your app needs backpressure, timeouts, and escape hatches
+* Logs matter. A lot.
+
+## What I Learned
+
+* Even a toy chaos endpoint reveals brittle assumptions
+* UIs are rarely prepared for partial failure
+* Humans react better to a helpful error message than a blank screen
+* Observability is less about dashboards and more about *writing good stories*
+
+## Reflection
+
+Breaking your own system is like doing push-ups with a weighted vest.
+It feels weird at first, but you walk away stronger.
+
+Try pressing the chaos button before shipping next time.
+Your app will thank you.

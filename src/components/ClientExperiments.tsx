@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import Link from "next/link";
 import TagFilter from "@/components/TagFilter";
 import type { PostMeta } from "@/types";
 import PaginatedGrid from "@/components/PaginatedGrid";
@@ -43,24 +44,29 @@ export default function ClientExperiments({
         items={filtered}
         perPage={6}
         renderItem={(exp) => (
-          <article
+          <Link
             key={exp.slug}
-            className="border border-[var(--border)] rounded-lg p-6 hover:border-primary-400 transition-colors"
+            href={`/experiments/${exp.slug}`}
+            className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-lg"
           >
-            <h3 className="text-h3 mb-1">{exp.title}</h3>
-            <p className="text-sm text-muted-foreground mb-2">{exp.date}</p>
-            <p className="text-base">{exp.excerpt}</p>
-            <div className="flex flex-wrap gap-2 mt-3">
-              {exp.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </article>
+            <article
+              className="border border-[var(--border)] rounded-lg p-6 group-hover:border-primary-400 transition-colors"
+            >
+              <h3 className="text-h3 mb-1">{exp.title}</h3>
+              <p className="text-sm text-muted-foreground mb-2">{exp.date}</p>
+              <p className="text-base">{exp.excerpt}</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {exp.tags?.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </article>
+          </Link>
         )}
       />
     </>
