@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import ThemeToggle from "./ThemeToggle";
+import Image from "next/image";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -71,7 +73,19 @@ export default function Header() {
             : "bg-[var(--background)]/50 backdrop-blur-none"
         }`}
     >
-      <h1 className="text-lg font-semibold">Juan <span className="text-primary-500">Flores</span></h1>
+      <Link href="/" className="flex items-center gap-2">
+        <Image
+          src="/icons/lab-icon.png"
+          alt="Engineering Lab Icon"
+          width={50}
+          height={50}
+          className="translate-y-[1px]"
+          priority
+        />
+        <span className="text-xl font-semibold tracking-tight">
+          Juan <span className="text-primary-500">Flores</span>
+        </span>
+      </Link>
 
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center space-x-4">

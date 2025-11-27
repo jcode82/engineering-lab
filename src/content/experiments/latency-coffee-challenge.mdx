@@ -1,0 +1,80 @@
+---
+title: "Latency Showdown: The 10ms Coffee Challenge"
+date: "2025-11-27"
+excerpt: "A playful experiment measuring how small latency changes can alter perceived performance, demonstrated using a fake coffee-ordering API."
+tags: ["performance", "latency", "frontend", "experiments"]
+references: []
+---
+
+import { ExperimentHeader } from "@/components/experiments/ExperimentHeader";
+import { CodeBlock } from "@/components/ui/CodeBlock";
+import { ExperimentChart } from "@/components/experiments/ExperimentChart";
+
+<ExperimentHeader />
+
+# Latency Showdown: The 10ms Coffee Challenge
+
+Humans are strange creatures. We will wait patiently at a DMV for three hours,  
+but if a website takes **more than 300ms** to load an image, we start muttering proclamations  
+of doom like “this site is broken” or “my internet sucks.”
+
+So today’s experiment asks a silly but revealing question:
+
+> **How much faster does an interaction need to be  
+before a regular person *feels* the difference?**
+
+To test this, I built a tiny mock API called the **Coffee Machine**, with 3 latency modes:
+
+- **Baseline:** ~180ms  
+- **Slightly optimized:** ~140ms  
+- **Over-optimized:** ~10ms  
+
+## The Setup
+
+The fake API randomly returns “☕ Latte ready!” but delays depending on scenario.
+
+<CodeBlock
+  language="ts"
+  code={`export async function getCoffee(mode: "baseline" | "mid" | "fast") {
+  const delay = mode === "baseline" ? 180 :
+                mode === "mid" ? 140 : 10;
+
+  await new Promise(r => setTimeout(r, delay));
+
+  return { message: "☕ Latte ready!", delay };
+}`}
+ />
+
+The API isn’t real, obviously.  
+The point is to simulate a **real perception threshold experiment**.
+
+## Results
+
+Using the mock latency chart in the hero section of the site, I ran 100 simulated requests:
+
+<ExperimentChart scenario="baseline" />
+<ExperimentChart scenario="cached" />
+<ExperimentChart scenario="pooled" />
+
+The funny part:  
+
+- Almost nobody noticed the drop from **180ms → 140ms**  
+- Everyone noticed **140ms → 10ms**  
+- But many couldn’t articulate *why* they felt it was better — they just “liked it more”
+
+This supports a classic UX principle:
+
+> **Small latency wins don’t matter. Big wins do.  
+> And humans notice speed emotionally, not logically.**
+
+## Reflection
+
+This experiment isn’t about coffee.  
+It’s about understanding where optimization time actually pays off.
+
+Shaving off 10–20ms from a UI interaction is cool, but it won’t make your product magical.  
+Shaving off **all but 10ms** will.
+
+Sometimes the most important optimization  
+is simply the one a human can *feel*.
+
