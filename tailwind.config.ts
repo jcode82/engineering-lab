@@ -39,6 +39,7 @@ const config: Config = {
           900: "#14532D",
         },
         highlight: "#F97316",
+        neon: "#00f6ff",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

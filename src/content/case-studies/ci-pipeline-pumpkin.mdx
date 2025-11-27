@@ -1,0 +1,51 @@
+---
+title: "The Day the CI Pipeline Turned Into a Pumpkin"
+date: "2025-10-18"
+summary: "A real-world style case study about a CI pipeline collapse caused by a subtle dependency chain and a missing checksum."
+status: "Resolved"
+tags: ["CI", "DevOps", "debugging"]
+references: []
+---
+
+# The Day the CI Pipeline Turned Into a Pumpkin
+
+This is a story about how a simple dependency bump  
+caused my CI pipeline to collapse at 2 AM like a fairy-tale carriage at midnight.
+
+## Incident
+
+A minor patch upgrade triggered:
+
+- 247 failing build jobs  
+- rising container times  
+- runners backing up  
+- and a Slack channel full of “is anyone awake?”
+
+## Diagnosis
+
+It wasn’t obvious at first.
+
+Builds were intermittently failing with checksum mismatches—  
+yet the packages were correct locally.
+
+After digging:
+
+- The dependency graph changed  
+- A transitive package switched mirrors  
+- The CI cache contained stale tarballs  
+- The new mirror required updated checksums
+
+Classic “it only breaks in CI” energy.
+
+## Fix
+
+- Purged the CI cache  
+- Rebuilt the lockfile  
+- Added deterministic registry URLs  
+- Enforced checksum pinning
+
+## Lesson
+
+CI isn’t just a build system.  
+It’s a distributed state machine.  
+If you don’t treat it like one, you’ll eventually get pumpkins.

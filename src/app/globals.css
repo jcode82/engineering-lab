@@ -106,3 +106,46 @@ section::before {
   }
 }
 
+/* ---------------------------------------
+   Article Typography
+--------------------------------------- */
+.prose h1, .prose h2, .prose h3 {
+  scroll-margin-top: 6rem;
+}
+
+.prose p:first-of-type {
+  font-size: 1.2rem;
+  line-height: 1.75;
+}
+
+.prose p:first-of-type::first-letter {
+  font-size: 3rem;
+  float: left;
+  line-height: 1;
+  margin-right: 0.2em;
+  font-weight: 600;
+  color: var(--primary-500);
+}
+
+/* Heading anchor link styles */
+.anchor-link {
+  opacity: 0;
+  margin-left: 0.4rem;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  font-size: 0.75em;
+  color: inherit;
+}
+
+.prose h1:hover .anchor-link,
+.prose h2:hover .anchor-link,
+.prose h3:hover .anchor-link,
+.prose h4:hover .anchor-link,
+.prose h5:hover .anchor-link {
+  opacity: 1;
+}
+
+.anchor-link::before {
+  content: "#";
+  color: var(--muted);
+}

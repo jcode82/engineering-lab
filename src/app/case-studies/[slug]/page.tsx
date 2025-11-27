@@ -1,9 +1,9 @@
 import ArticleLayout from "@/components/ArticleLayout";
 import {
   getBacklinks,
-  getNote,
+  getCaseStudy,
   getReferenceSummaries,
-  getAllNotes,
+  getAllCaseStudies,
   getPrevNext,
   toLinkedSummary,
 } from "@/lib/server/mdx";
@@ -14,16 +14,16 @@ interface PageProps {
   params: { slug: string };
 }
 
-export default async function NotePage({ params }: PageProps) {
+export default async function CaseStudyPage({ params }: PageProps) {
   const { slug } = params;
 
-  const { content, data, source } = await getNote(slug);
-  const typedMeta = normalizeMeta(data, slug);
+  const { content, data, source } = await getCaseStudy(slug);
+  const typedMeta = normalizeMeta(data, slug, "case-study");
   const headings = extractHeadings(source);
   const referenceLinks = getReferenceSummaries(typedMeta.references ?? []);
   const backlinks = getBacklinks(slug);
-  const allNotes = getAllNotes();
-  const { prev, next } = getPrevNext(allNotes, slug);
+  const allCaseStudies = getAllCaseStudies();
+  const { prev, next } = getPrevNext(allCaseStudies, slug);
   const prevLink = prev ? toLinkedSummary(prev) : null;
   const nextLink = next ? toLinkedSummary(next) : null;
 
@@ -32,7 +32,7 @@ export default async function NotePage({ params }: PageProps) {
       title={typedMeta.title}
       date={typedMeta.date}
       tags={typedMeta.tags}
-      kind="note"
+      kind="case-study"
       headings={headings}
       references={referenceLinks}
       backlinks={backlinks}

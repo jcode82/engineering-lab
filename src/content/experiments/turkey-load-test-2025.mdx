@@ -1,0 +1,63 @@
+---
+title: "Turkey Load Test 2025: Benchmarking My Oven Like a Distributed System"
+date: "2025-11-27"
+excerpt: "What happens when a software engineer decides to load test Thanksgiving dinner? Observability, chaos, and delicious outcomes."
+tags: ["performance", "fun", "thanksgiving"]
+references: []
+---
+
+import { ExperimentHeader } from "@/components/experiments/ExperimentHeader";
+import { CodeBlock } from "@/components/ui/CodeBlock";
+
+<ExperimentHeader />
+
+# Turkey Load Test 2025: Benchmarking My Oven Like a Distributed System
+
+Most people cook their Thanksgiving turkey by following a recipe.
+
+I… load tested my oven.
+
+## The Setup
+
+I treated the oven like a distributed system node:
+
+- **CPU temp** → oven temperature  
+- **Memory pressure** → how much food you cram inside  
+- **I/O throughput** → how often the door opens  
+- **Latency** → cook time  
+- **Request spikes** → hungry family members
+
+I instrumented the cook cycle with a tiny script:
+
+<CodeBlock
+  language="ts"
+  code={`export function monitorOven(temp: number, load: number) {
+  return {
+    status: temp > 425 ? "🔥 overload" :
+            temp < 300 ? "❄️ underheated" : "👌 stable",
+    load,
+    timestamp: Date.now()
+  };
+}`}
+/>
+
+## Results
+
+* Opening the oven door every 12 minutes (my dad’s idea) added **~45 minutes** of latency
+* Stuffing the oven with rolls, yams, and a pan of bacon-wrapped asparagus caused **thermal thrashing**
+* A stable 350°F with minimal I/O produced the best throughput
+
+## Reflection
+
+Turns out:
+**Thanksgiving dinner is a distributed system with terrible documentation.**
+
+And just like production:
+
+* Observability matters
+* Interference kills performance
+* And load tests reveal surprising truths
+
+Dinner was fantastic.
+My oven survived.
+10/10 would benchmark again.
