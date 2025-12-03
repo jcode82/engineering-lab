@@ -32,10 +32,10 @@ export default async function ExperimentPage({ params }: PageProps) {
   const typedMeta = normalizeMeta(
     {
       ...data,
-      title: metaRow.title ?? data.title,
-      date: metaRow.date ?? data.date,
-      excerpt: metaRow.excerpt ?? data.excerpt,
-      tags: metaRow.tags ?? data.tags,
+      title: metaRow.title ?? (data.title as string | undefined),
+      date: metaRow.date ?? (data.date as string | undefined),
+      excerpt: metaRow.excerpt ?? (data.excerpt as string | undefined),
+      tags: metaRow.tags ?? (data.tags as string[] | undefined),
     },
     slug,
     "experiment"
