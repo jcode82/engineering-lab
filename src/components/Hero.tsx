@@ -11,7 +11,7 @@ export default function Hero() {
       {/* Left: portrait */}
       <div className="relative h-[50vh] md:h-auto">
         <Image
-          src="/images/juan.jpg"
+          src="/images/jf_hero.jpg"
           alt="Juan Flores"
           fill
           className="object-cover"

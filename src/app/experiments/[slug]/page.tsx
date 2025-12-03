@@ -1,9 +1,14 @@
+import { notFound } from "next/navigation";
 import ArticleLayout from "@/components/ArticleLayout";
+import {
+  experimentRowToMeta,
+  getExperimentBySlug,
+  getExperiments,
+} from "@/lib/data/experiments";
 import {
   getBacklinks,
   getExperiment,
   getReferenceSummaries,
-  getAllExperiments,
   getPrevNext,
   toLinkedSummary,
 } from "@/lib/server/mdx";
@@ -18,12 +23,27 @@ interface PageProps {
 export default async function ExperimentPage({ params }: PageProps) {
   const { slug } = params;
 
+  const metaRow = await getExperimentBySlug(slug);
+  if (!metaRow) {
+    notFound();
+  }
+
   const { content, data, source } = await getExperiment(slug);
-  const typedMeta = normalizeMeta(data, slug);
+  const typedMeta = normalizeMeta(
+    {
+      ...data,
+      title: metaRow.title ?? data.title,
+      date: metaRow.date ?? data.date,
+      excerpt: metaRow.excerpt ?? data.excerpt,
+      tags: metaRow.tags ?? data.tags,
+    },
+    slug,
+    "experiment"
+  );
   const headings = extractHeadings(source);
   const referenceLinks = getReferenceSummaries(typedMeta.references ?? []);
   const backlinks = getBacklinks(slug);
-  const allExperiments = getAllExperiments();
+  const allExperiments = (await getExperiments()).map(experimentRowToMeta);
   const { prev, next } = getPrevNext(allExperiments, slug);
   const prevLink = prev ? toLinkedSummary(prev) : null;
   const nextLink = next ? toLinkedSummary(next) : null;
