@@ -70,3 +70,38 @@ create trigger update_notes_timestamp
 before update on notes
 for each row
 execute procedure set_updated_at();
+
+-- =======================
+-- CASE STUDIES
+-- =======================
+create table if not exists case_studies (
+  id uuid primary key default uuid_generate_v4(),
+  slug text unique not null,
+  title text not null,
+  excerpt text,
+  date date,
+  tags text[] default '{}',
+  status text check (status in ('Resolved','Ongoing')) default 'Resolved',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table case_studies enable row level security;
+
+create policy "public_read_case_studies"
+  on case_studies for select
+  to anon
+  using (true);
+
+create or replace function set_case_studies_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger update_case_studies_timestamp
+before update on case_studies
+for each row
+execute procedure set_case_studies_updated_at();

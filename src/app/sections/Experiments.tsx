@@ -2,10 +2,7 @@ import SectionWrapper from "@/components/SectionWrapper";
 import ClientExperiments from "@/components/ClientExperiments";
 import Reveal from "@/components/Reveal";
 import type { PostMeta } from "@/types";
-import {
-  experimentRowToMeta,
-  getExperiments,
-} from "@/lib/data/experiments";
+import { experimentRowToMeta, getExperiments } from "@/lib/data/experiments";
 
 export default async function Experiments() {
   const experimentRows = await getExperiments();
@@ -16,7 +13,7 @@ export default async function Experiments() {
   );
 
   return (
-    <SectionWrapper id="projects">
+    <SectionWrapper id="experiments">
       <Reveal
         variants={{
           hidden: { opacity: 0, y: 20, rotateX: 15 },
