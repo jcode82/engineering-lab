@@ -1,0 +1,43 @@
+---
+title: "Cache Stampede Outage"
+date: "2025-02-12"
+excerpt: "A single missing guard let thousands of requests dogpile the origin layer during a deploy freeze."
+tags: ["caching", "performance", "incidents"]
+status: "Ongoing"
+references: []
+---
+
+# Cache Stampede Outage
+
+The lab homepage used an edge cache with a five-minute TTL. During a deploy freeze we invalidated that cache while re-rendering the hero charts, and the replacement pipeline took ~12 seconds. Every user in that window bypassed the cache and slammed the origin server.
+
+## Timeline
+
+- **T+0s** – Cache invalidated
+- **T+4s** – 4xx errors appear as the origin exhausts concurrency slots
+- **T+10s** – Pager fires; swap traffic through a fallback worker
+- **T+15s** – Patch rolled out with request coalescing
+
+## What Broke
+
+```ts
+if (!cacheHit) {
+  const data = await fetchOrigin();
+  await cache.set(key, data, { ttl: 300 });
+  return data;
+}
+```
+
+Every request that missed the cache invoked `fetchOrigin` even though the first request was already regenerating it.
+
+## Fix
+
+```ts
+const data = await cache.remember(key, 300, () => fetchOrigin());
+```
+
+The `remember` wrapper uses a semaphore stored in Redis so only one request recomputes the payload.
+
+## Status
+
+We’re still instrumenting the new guardrail before calling it fully resolved, but the cache graph is flat again and the hero charts survived a synthetic surge test.

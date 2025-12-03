@@ -24,6 +24,7 @@ interface ArticleLayoutProps {
   date?: string;
   tags?: string[];
   kind?: PostKind;
+  status?: string;
   children: ReactNode;
   references?: LinkedPostSummary[];
   backlinks?: LinkedPostSummary[];
@@ -37,6 +38,7 @@ export default function ArticleLayout({
   date,
   tags = [],
   kind,
+  status,
   references = [],
   backlinks = [],
   children,
@@ -102,6 +104,15 @@ export default function ArticleLayout({
                     <span className="inline-flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" />
                       <span>{date}</span>
+                    </span>
+                  )}
+
+                  {status && (
+                    <span
+                      className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border)]/70
+                                 text-xs font-semibold uppercase tracking-[0.2em]"
+                    >
+                      {status}
                     </span>
                   )}
 

@@ -1,0 +1,43 @@
+---
+title: "The MySQL Deadlock Incident"
+date: "2025-01-04"
+excerpt: "A production replica froze mid-deploy, forcing us to peel back transaction logs and rethink how we batch writes."
+tags: ["database", "deadlock", "operations"]
+status: "Resolved"
+references: []
+---
+
+import { ExperimentHeader } from "@/components/experiments/ExperimentHeader";
+
+# The MySQL Deadlock Incident
+
+We shipped a harmless-looking migration that added a new `status` column, but the deploy overlapped with an analytics job that backfilled historical rows. Within minutes, our write node started throwing `ER_LOCK_WAIT_TIMEOUT` errors.
+
+## Symptoms
+
+- API latency spiked from 80ms → 1.6s
+- Queue workers stalled because acknowledgements never committed
+- `SHOW ENGINE INNODB STATUS` showed a growing list of waiting transactions
+
+## Diagnosis
+
+We traced the problem to two long-lived transactions:
+
+1. **Migration**: batching updates in chunks of 5k
+2. **Analytics job**: scanning the same tables with `FOR UPDATE`
+
+Because the migration sorted rows differently per batch, row-level locks overlapped just enough to create a classic deadlock cycle.
+
+## Fix
+
+- Paused the analytics job
+- Re-ran the migration with smaller batches and explicit ordering
+- Added a `READ COMMITTED` isolation override for the analytics job
+
+## Lessons
+
+- Long transactions are distributed systems in disguise
+- Backfills should always order by primary key
+- Observability saved us—slow query sampling gave us the exact transaction pair that collided
+
+<ExperimentHeader />

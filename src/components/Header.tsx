@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
+const NAV_SECTIONS = ["experiments", "notes", "case-studies", "about", "contact"] as const;
+
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -12,7 +14,7 @@ export default function Header() {
 
   // Memoize section IDs to keep dependency stable
   const sections = useMemo(
-    () => ["hero", "projects", "notes", "about", "contact"],
+    () => ["hero", ...NAV_SECTIONS],
     []
   );
 
@@ -49,6 +51,9 @@ export default function Header() {
 
   const linkBase =
     "transition-colors duration-200 hover:text-primary-500 capitalize";
+  const labelMap: Record<string, string> = {
+    "case-studies": "case studies",
+  };
 
   const makeLink = (id: string) => (
     <a
@@ -59,7 +64,7 @@ export default function Header() {
         active === id ? "text-primary-500 font-semibold" : "text-foreground"
       }`}
     >
-      {id}
+      {labelMap[id] ?? id}
     </a>
   );
 
@@ -89,7 +94,7 @@ export default function Header() {
 
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center space-x-4">
-        {sections.slice(1).map((id) => makeLink(id))}
+        {NAV_SECTIONS.map((id) => makeLink(id))}
         <ThemeToggle />
       </nav>
 
@@ -112,7 +117,7 @@ export default function Header() {
                      rounded-md shadow-lg border border-[var(--border)]
                      flex flex-col space-y-2 p-4 md:hidden"
         >
-          {sections.slice(1).map((id) => makeLink(id))}
+          {NAV_SECTIONS.map((id) => makeLink(id))}
         </div>
       )}
     </header>

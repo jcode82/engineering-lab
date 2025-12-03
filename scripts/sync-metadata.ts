@@ -8,6 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const EXPERIMENTS_DIR = "src/content/experiments";
 const NOTES_DIR = "src/content/notes";
+const CASE_STUDIES_DIR = "src/content/case-studies";
 
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE!;
@@ -17,6 +18,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE);
 // to run script: npx tsx scripts/sync-metadata.ts
 
 function getFiles(dir: string) {
+  if (!fs.existsSync(dir)) return [];
   return fs
     .readdirSync(dir)
     .filter((f) => f.endsWith(".mdx"))
@@ -34,10 +36,13 @@ function parseMDX(filePath: string) {
     excerpt: data.excerpt ?? "",
     date: data.date ?? null,
     tags: data.tags ?? [],
+    status: data.status ?? null,
   };
 }
 
-async function syncTable(table: "experiments" | "notes", dir: string) {
+type TableName = "experiments" | "notes" | "case_studies";
+
+async function syncTable(table: TableName, dir: string) {
   const files = getFiles(dir);
 
   console.log(`\n🔍 Scanning ${table} in ${dir}...`);
@@ -45,15 +50,20 @@ async function syncTable(table: "experiments" | "notes", dir: string) {
 
   for (const file of files) {
     const meta = parseMDX(file);
+    const payload: Record<string, unknown> = {
+      slug: meta.slug,
+      title: meta.title,
+      excerpt: meta.excerpt,
+      date: meta.date,
+      tags: meta.tags,
+    };
+
+    if (table === "case_studies") {
+      payload.status = meta.status ?? "Resolved";
+    }
 
     const { error } = await supabase.from(table).upsert(
-      {
-        slug: meta.slug,
-        title: meta.title,
-        excerpt: meta.excerpt,
-        date: meta.date,
-        tags: meta.tags,
-      },
+      payload,
       { onConflict: "slug" }
     );
 
@@ -70,6 +80,7 @@ async function syncTable(table: "experiments" | "notes", dir: string) {
 
   await syncTable("experiments", EXPERIMENTS_DIR);
   await syncTable("notes", NOTES_DIR);
+  await syncTable("case_studies", CASE_STUDIES_DIR);
 
   console.log("\n🎉 Sync complete! Your Supabase metadata is now up-to-date.\n");
 })();
