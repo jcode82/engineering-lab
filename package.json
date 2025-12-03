@@ -11,7 +11,9 @@
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
     "@next/mdx": "^16.0.1",
+    "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.81.1",
+    "dotenv": "^17.2.3",
     "framer-motion": "^12.23.24",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.552.0",
@@ -37,6 +39,8 @@
     "eslint-config-next": "14.2.33",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
