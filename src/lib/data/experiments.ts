@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase.types";
 import type { PostMeta } from "@/types";
+import { getAllExperiments } from "@/lib/server/mdx";
 
 export type ExperimentRow =
   Database["public"]["Tables"]["experiments"]["Row"];
@@ -25,11 +26,12 @@ export async function getExperiments(): Promise<ExperimentRow[]> {
     .order("date", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to fetch experiments: ${error.message}`);
+  if (error || !data) {
+    console.warn("[supabase] Failed to fetch experiments, falling back to MDX", error?.message);
+    return fallbackExperiments();
   }
 
-  return data ?? [];
+  return data;
 }
 
 export async function getExperimentBySlug(
@@ -43,9 +45,27 @@ export async function getExperimentBySlug(
     .eq("slug", slug)
     .maybeSingle();
 
-  if (error) {
-    throw new Error(`Failed to fetch experiment: ${error.message}`);
+  if (error || !data) {
+    const fallbackMeta = getAllExperiments().find((meta) => meta.slug === slug);
+    return fallbackMeta ? metaToExperimentRow(fallbackMeta) : null;
   }
 
-  return data ?? null;
+  return data;
+}
+
+function metaToExperimentRow(meta: PostMeta): ExperimentRow {
+  return {
+    id: meta.slug,
+    slug: meta.slug,
+    title: meta.title,
+    excerpt: meta.excerpt,
+    date: meta.date,
+    tags: meta.tags ?? [],
+    created_at: null,
+    updated_at: null,
+  };
+}
+
+function fallbackExperiments(): ExperimentRow[] {
+  return getAllExperiments().map(metaToExperimentRow);
 }

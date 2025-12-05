@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase.types";
 import type { PostMeta } from "@/types";
+import { getAllNotes } from "@/lib/server/mdx";
 
 export type NoteRow = Database["public"]["Tables"]["notes"]["Row"];
 
@@ -24,11 +25,12 @@ export async function getNotes(): Promise<NoteRow[]> {
     .order("date", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to fetch notes: ${error.message}`);
+  if (error || !data) {
+    console.warn("[supabase] Failed to fetch notes, falling back to MDX", error?.message);
+    return fallbackNotes();
   }
 
-  return data ?? [];
+  return data;
 }
 
 export async function getNoteBySlug(slug: string): Promise<NoteRow | null> {
@@ -40,9 +42,27 @@ export async function getNoteBySlug(slug: string): Promise<NoteRow | null> {
     .eq("slug", slug)
     .maybeSingle();
 
-  if (error) {
-    throw new Error(`Failed to fetch note: ${error.message}`);
+  if (error || !data) {
+    const fallbackMeta = getAllNotes().find((meta) => meta.slug === slug);
+    return fallbackMeta ? metaToNoteRow(fallbackMeta) : null;
   }
 
-  return data ?? null;
+  return data;
+}
+
+function metaToNoteRow(meta: PostMeta): NoteRow {
+  return {
+    id: meta.slug,
+    slug: meta.slug,
+    title: meta.title,
+    excerpt: meta.excerpt,
+    date: meta.date,
+    tags: meta.tags ?? [],
+    created_at: null,
+    updated_at: null,
+  };
+}
+
+function fallbackNotes(): NoteRow[] {
+  return getAllNotes().map(metaToNoteRow);
 }

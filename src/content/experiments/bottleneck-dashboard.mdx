@@ -1,0 +1,20 @@
+---
+title: "Bottleneck Dashboard"
+date: "2025-01-11"
+excerpt: "Simulating slow database queries and demonstrating the win from indexing/optimization."
+tags: ["bottleneck", "performance", "latency"]
+references: []
+---
+
+import BottleneckPanel from "@/components/experiments/BottleneckPanel";
+
+# Bottleneck Dashboard
+
+Real performance work starts with visualizing the pain. This dashboard runs 10
+synthetic samples against three scenarios:
+
+- **Baseline** — healthy queries (~250ms p95)
+- **Slow** — intentionally bottlenecked route (~1.4s p95)
+- **Optimized** — tuned path after indexing/caching (~70ms p95)
+
+<BottleneckPanel />

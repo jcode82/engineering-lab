@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase.types";
 import type { PostMeta } from "@/types";
+import { getAllCaseStudies } from "@/lib/server/mdx";
 
 export type CaseStudyRow =
   Database["public"]["Tables"]["case_studies"]["Row"];
@@ -26,11 +27,15 @@ export async function getCaseStudies(): Promise<CaseStudyRow[]> {
     .order("date", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to fetch case studies: ${error.message}`);
+  if (error || !data) {
+    console.warn(
+      "[supabase] Failed to fetch case studies, falling back to MDX",
+      error?.message
+    );
+    return fallbackCaseStudies();
   }
 
-  return data ?? [];
+  return data;
 }
 
 export async function getCaseStudyBySlug(
@@ -44,9 +49,28 @@ export async function getCaseStudyBySlug(
     .eq("slug", slug)
     .maybeSingle();
 
-  if (error) {
-    throw new Error(`Failed to fetch case study: ${error.message}`);
+  if (error || !data) {
+    const fallbackMeta = getAllCaseStudies().find((meta) => meta.slug === slug);
+    return fallbackMeta ? metaToCaseRow(fallbackMeta) : null;
   }
 
-  return data ?? null;
+  return data;
+}
+
+function metaToCaseRow(meta: PostMeta): CaseStudyRow {
+  return {
+    id: meta.slug,
+    slug: meta.slug,
+    title: meta.title,
+    excerpt: meta.excerpt,
+    date: meta.date,
+    tags: meta.tags ?? [],
+    status: meta.status ?? null,
+    created_at: null,
+    updated_at: null,
+  };
+}
+
+function fallbackCaseStudies(): CaseStudyRow[] {
+  return getAllCaseStudies().map(metaToCaseRow);
 }
