@@ -43,7 +43,7 @@ export default function Hero() {
         <Reveal>
           <div className="mt-10 flex gap-4">
             <a
-              href="/#projects"
+              href="/#experiments"
               className="px-6 py-3 rounded-lg bg-primary-500 text-white font-semibold shadow-lg shadow-primary-500/30 transition hover:bg-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
             >
               Explore
