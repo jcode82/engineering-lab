@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollTracker from "@/components/ScrollTracker";
+import TrafficTracker from "@/components/TrafficTracker";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
               text-foreground`}>
         <Header />
         <ScrollTracker />
+        <TrafficTracker />
         <main>{children}</main>
         <Footer />
       </body>
