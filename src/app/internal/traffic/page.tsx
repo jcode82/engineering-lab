@@ -41,6 +41,8 @@ export default async function TrafficDashboard() {
     .order("date", { ascending: true })
     .limit(30);
 
+  const { data: heatmap } = await supabase.rpc("traffic_hourly_heatmap");
+
   const safeEvents = events ?? [];
   const timeline = daily?.length
     ? daily.map((day) => ({
@@ -60,6 +62,7 @@ export default async function TrafficDashboard() {
   const sortedPages = Object.entries(topPages)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
+  const heatmapData = heatmap ?? [];
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-16 space-y-12">
@@ -130,6 +133,36 @@ export default async function TrafficDashboard() {
           ))}
         </div>
       </section>
+
+      {heatmapData.length > 0 && <HourHeatmap data={heatmapData} />}
     </div>
+  );
+}
+
+function HourHeatmap({ data }: { data: { hour: number; visits: number }[] }) {
+  const max = data.reduce((acc, row) => Math.max(acc, row.visits), 0) || 1;
+  return (
+    <section className={`${NEON_CARD} p-6`}>
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+      <h2 className="text-2xl font-semibold mb-4">
+        Visitor Heatmap (hour of day)
+      </h2>
+      <div className="grid grid-cols-6 md:grid-cols-12 gap-3 text-xs">
+        {data.map(({ hour, visits }) => {
+          const intensity = Math.max(visits / max, 0.15);
+          return (
+            <div key={hour} className="flex flex-col items-center gap-1">
+              <div
+                className="w-full rounded-xl bg-gradient-to-t from-cyan-500/60 to-emerald-400/60"
+                style={{ height: `${intensity * 80}px` }}
+              />
+              <span className="opacity-70">
+                {hour.toString().padStart(2, "0")}h
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

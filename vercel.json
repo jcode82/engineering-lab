@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/aggregate",
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/cron/purge",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

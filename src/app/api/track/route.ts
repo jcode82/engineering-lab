@@ -18,22 +18,35 @@ const BOT_KEYWORDS = [
   "monitor",
 ];
 
+async function logGuard(reason: string) {
+  try {
+    const supabase = createAdminClient();
+    await supabase.from("traffic_guard_events").insert({ reason });
+  } catch (error) {
+    console.error("[track] guard log error", error);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const host = req.headers.get("host") || "";
-
-    if (host.includes("localhost") || host.includes("127.0.0.1")) {
-      return NextResponse.json({ ok: true, ignored: "localhost" });
-    }
-
     const uaHeader = req.headers.get("user-agent") ?? "";
     const ua = uaHeader.toLowerCase();
 
+    const supabase = createAdminClient();
+
+    if (host.includes("localhost") || host.includes("127.0.0.1")) {
+      await logGuard("localhost");
+      return NextResponse.json({ ok: true, ignored: "localhost" });
+    }
+
     if (ua.length < 10) {
-      return NextResponse.json({ ok: true, ignored: "suspicious-ua" });
+      await logGuard("suspicious-UA");
+      return NextResponse.json({ ok: true, ignored: "suspicious-UA" });
     }
 
     if (BOT_KEYWORDS.some((keyword) => ua.includes(keyword))) {
+      await logGuard("bot");
       return NextResponse.json({ ok: true, ignored: "bot" });
     }
 
@@ -55,7 +68,6 @@ export async function POST(req: NextRequest) {
       "unknown";
 
     const userHash = crypto.createHash("sha256").update(ip).digest("hex");
-    const supabase = createAdminClient();
 
     const tenSecondsAgo = new Date(Date.now() - 10_000).toISOString();
     const { data: recent } = await supabase
@@ -66,6 +78,7 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     if (recent?.length) {
+      await logGuard("throttled");
       return NextResponse.json({ ok: true, throttled: true });
     }
 

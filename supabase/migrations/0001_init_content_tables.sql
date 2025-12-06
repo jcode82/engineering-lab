@@ -183,3 +183,48 @@ begin
     top_pages = excluded.top_pages;
 end;
 $$;
+
+-- Guard table for ignored/throttled events
+create table if not exists traffic_guard_events (
+  id uuid primary key default uuid_generate_v4(),
+  reason text not null check (
+    reason in ('localhost', 'bot', 'suspicious-UA', 'throttled')
+  ),
+  created_at timestamptz default now()
+);
+
+alter table traffic_guard_events enable row level security;
+
+create policy "traffic_guard_insert"
+  on traffic_guard_events for insert
+  to anon
+  with check (true);
+
+create policy "traffic_guard_select_admin"
+  on traffic_guard_events for select
+  to service_role
+  using (true);
+
+create or replace function traffic_hourly_heatmap()
+returns table(hour integer, visits integer)
+language sql
+as $$
+  select
+    extract(hour from ts)::int as hour,
+    count(*)::int as visits
+  from traffic_events
+  where ts > now() - interval '30 days'
+  group by hour
+  order by hour;
+$$;
+
+create or replace function traffic_purge_old()
+returns void
+language plpgsql
+as $$
+begin
+  delete from traffic_events where ts < now() - interval '90 days';
+  delete from traffic_guard_events where created_at < now() - interval '90 days';
+  delete from traffic_daily where date < (now() - interval '365 days')::date;
+end;
+$$;
