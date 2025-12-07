@@ -1,0 +1,89 @@
+---
+title: Scaling Simulator
+slug: scaling-simulator
+date: 2025-12-07
+excerpt: A small autoscaling simulator that shows how naive policies thrash, and how a bit of smoothing and cooldown logic can stabilize a cluster.
+tags:
+  - scaling
+  - autoscaling
+  - reliability
+  - observability
+type: experiment
+---
+
+# Scaling Simulator
+
+**Question:**  
+How does an autoscaler behave when traffic is spiky, and what changes make it less chaotic?
+
+This experiment builds a small simulation of traffic, cluster replicas, and resource utilization, and compares two policies:
+
+- **Thrashy autoscaling** – jumps to the instantaneous number of required replicas with no smoothing or cooldown.
+- **Stable autoscaling** – uses a smoothed utilization signal and a cooldown window before changing replica counts.
+
+---
+
+## Setup
+
+- **Duration:** 10 minutes (simulated time)
+- **Step:** 10 second intervals
+- **Traffic shape:**
+  - baseline daytime traffic curve
+  - mid-interval spike (like a marketing blast)
+  - some jitter to keep the curve from being too clean
+
+For each timestep, we record:
+
+- incoming requests per second (RPS)
+- replica count
+- average CPU %
+- approximate memory %
+
+---
+
+## Autoscaling Policies
+
+### Thrashy policy
+
+- Scales replicas directly to `ceil(RPS / capacityPerReplica)` every step.
+- No hysteresis, no cooldown, no smoothing.
+- Reacts instantly to noise and spikes.
+
+### Stable policy
+
+- Tracks a smoothed utilization signal over time.
+- Only scales if utilization is **sustained** above or below thresholds.
+- Enforces a **cooldown** between scale changes.
+- Limits the maximum step size when scaling up.
+
+---
+
+## Before & After
+
+The experiment overlays three time series:
+
+1. **Replica count** – how often and how aggressively the autoscaler changes.
+2. **CPU and memory utilization** – how “hot” each replica is.
+3. **Incoming load vs effective capacity** – are we under- or over-provisioned?
+
+In the **thrashy** scenario you should see:
+
+- rapid oscillations in replica count
+- oscillating CPU utilization (caused by constant resizing)
+- potential over-reaction after a brief spike
+
+In the **stable** scenario you should see:
+
+- fewer scale events
+- smoother CPU and memory utilization curves
+- slightly slower response to spikes, but much less churn afterward
+
+---
+
+## Takeaways
+
+- Autoscaling is less about “perfectly matching” load and more about **absorbing variance**.
+- A bit of smoothing and cooldown logic trades tiny periods of over/under-provisioning for global stability.
+- The cluster is a **control system**, and naive controllers will oscillate.
+
+This simulator is intentionally small and local, but the core ideas map directly onto real systems: HPA, KEDA, ECS capacity providers, etc.
