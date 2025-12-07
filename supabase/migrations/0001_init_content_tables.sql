@@ -105,3 +105,126 @@ create trigger update_case_studies_timestamp
 before update on case_studies
 for each row
 execute procedure set_case_studies_updated_at();
+
+-- =======================
+-- TRAFFIC ANALYTICS
+-- =======================
+create table if not exists traffic_events (
+  id uuid primary key default uuid_generate_v4(),
+  path text not null,
+  user_hash text not null,
+  user_agent text,
+  ts timestamptz not null default now()
+);
+
+create index if not exists traffic_events_ts_idx on traffic_events (ts desc);
+create index if not exists traffic_events_path_idx on traffic_events (path);
+
+create table if not exists traffic_daily (
+  date date primary key,
+  total_visits integer not null,
+  unique_visitors integer not null,
+  top_pages jsonb not null default '[]'::jsonb
+);
+
+alter table traffic_events enable row level security;
+alter table traffic_daily enable row level security;
+
+create policy "traffic_insert_public"
+  on traffic_events for insert
+  to anon
+  with check (true);
+
+create policy "traffic_select_admin"
+  on traffic_events for select
+  to service_role
+  using (true);
+
+create policy "traffic_daily_select_admin"
+  on traffic_daily for select
+  to service_role
+  using (true);
+
+create or replace function aggregate_daily_traffic()
+returns void
+language plpgsql
+as $$
+declare
+  target_date date := (now() - interval '1 day')::date;
+begin
+  insert into traffic_daily (date, total_visits, unique_visitors, top_pages)
+  values (
+    target_date,
+    (
+      select count(*) from traffic_events where ts::date = target_date
+    ),
+    (
+      select count(distinct user_hash) from traffic_events where ts::date = target_date
+    ),
+    (
+      select coalesce(
+        json_agg(row_to_json(t)),
+        '[]'::jsonb
+      )
+      from (
+        select path, count(*) as hits
+        from traffic_events
+        where ts::date = target_date
+        group by path
+        order by hits desc
+        limit 10
+      ) t
+    )
+  )
+  on conflict (date) do update
+  set
+    total_visits = excluded.total_visits,
+    unique_visitors = excluded.unique_visitors,
+    top_pages = excluded.top_pages;
+end;
+$$;
+
+-- Guard table for ignored/throttled events
+create table if not exists traffic_guard_events (
+  id uuid primary key default uuid_generate_v4(),
+  reason text not null check (
+    reason in ('localhost', 'bot', 'suspicious-UA', 'throttled')
+  ),
+  created_at timestamptz default now()
+);
+
+alter table traffic_guard_events enable row level security;
+
+create policy "traffic_guard_insert"
+  on traffic_guard_events for insert
+  to anon
+  with check (true);
+
+create policy "traffic_guard_select_admin"
+  on traffic_guard_events for select
+  to service_role
+  using (true);
+
+create or replace function traffic_hourly_heatmap()
+returns table(hour integer, visits integer)
+language sql
+as $$
+  select
+    extract(hour from ts)::int as hour,
+    count(*)::int as visits
+  from traffic_events
+  where ts > now() - interval '30 days'
+  group by hour
+  order by hour;
+$$;
+
+create or replace function traffic_purge_old()
+returns void
+language plpgsql
+as $$
+begin
+  delete from traffic_events where ts < now() - interval '90 days';
+  delete from traffic_guard_events where created_at < now() - interval '90 days';
+  delete from traffic_daily where date < (now() - interval '365 days')::date;
+end;
+$$;
