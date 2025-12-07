@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const matcherPrefix = "/internal";
+console.log("🔴 MIDDLEWARE FILE LOADED");
 
 export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
-  if (!pathname.startsWith(matcherPrefix)) {
-    return NextResponse.next();
+  console.log("🟡 MIDDLEWARE EXECUTED for:", req.nextUrl.pathname);
+  console.log("[middleware fired] path =", req.nextUrl.pathname);
+  if (process.env.NODE_ENV === "development") {
+    console.log("[middleware] request", req.nextUrl.pathname);
   }
 
   const authHeader = req.headers.get("authorization") || "";
@@ -19,7 +19,14 @@ export function middleware(req: NextRequest) {
   }
 
   const base64 = authHeader.replace("Basic ", "");
-  const [user, pass] = Buffer.from(base64, "base64").toString("utf8").split(":");
+  let decoded = "";
+  try {
+    decoded = atob(base64);
+  } catch {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const [user, pass] = decoded.split(":");
 
   const expectedUser = process.env.INTERNAL_USER || "lab";
   const expectedPass = process.env.INTERNAL_PASS || "secret";
