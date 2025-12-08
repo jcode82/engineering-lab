@@ -27,11 +27,15 @@ export async function getExperiments(): Promise<ExperimentRow[]> {
     .order("created_at", { ascending: false });
 
   if (error || !data) {
-    console.warn("[supabase] Failed to fetch experiments, falling back to MDX", error?.message);
+    console.warn(
+      "[supabase] Failed to fetch experiments, falling back to MDX",
+      error?.message
+    );
     return fallbackExperiments();
   }
 
-  return data;
+  const merged = mergeWithMdx(data);
+  return sortByDateDesc(merged);
 }
 
 export async function getExperimentBySlug(
@@ -68,4 +72,25 @@ function metaToExperimentRow(meta: PostMeta): ExperimentRow {
 
 function fallbackExperiments(): ExperimentRow[] {
   return getAllExperiments().map(metaToExperimentRow);
+}
+
+function mergeWithMdx(rows: ExperimentRow[]): ExperimentRow[] {
+  const existing = new Map(rows.map((row) => [row.slug, row] as const));
+  const mdxMetas = getAllExperiments();
+
+  for (const meta of mdxMetas) {
+    if (!existing.has(meta.slug)) {
+      existing.set(meta.slug, metaToExperimentRow(meta));
+    }
+  }
+
+  return Array.from(existing.values());
+}
+
+function sortByDateDesc(rows: ExperimentRow[]): ExperimentRow[] {
+  return rows.sort((a, b) => {
+    const dayA = Date.parse(a.date ?? "");
+    const dayB = Date.parse(b.date ?? "");
+    return (isNaN(dayB) ? 0 : dayB) - (isNaN(dayA) ? 0 : dayA);
+  });
 }
