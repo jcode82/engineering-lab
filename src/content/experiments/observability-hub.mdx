@@ -1,0 +1,60 @@
+---
+title: "Observability Hub: Reading the Pulse of a System"
+date: "2025-12-08"
+excerpt: "A tiny observability stack that generates metrics, logs, and alerts from the same synthetic incident."
+tags: ["observability", "metrics", "logs", "alerts"]
+---
+
+# Observability Hub
+
+Systems do not speak English—they speak in metrics, logs, and alerts. This
+experiment builds a small "control room" that lets you watch those signals dance
+in sync. Everything you see is synthetic, but the rules are honest:
+
+- Metrics drift, spike, and cool down using the same traffic pattern that powers
+  the Scaling Simulator.
+- Logs are structured JSON snapshots of those metrics.
+- Alerts fire from simple rules (`p95 > 400ms`, `error rate > 5%`, sustained CPU > 80%).
+
+<ObservabilityHub />
+
+## Setup
+
+No external services are involved. A few Next.js API routes generate the data in
+memory, so you can read (and modify) every line:
+
+- `/api/observability/metrics` returns CPU, memory, RPS, error rate, and p95
+  latency.
+- `/api/observability/logs` synthesizes structured logs derived from the same
+  metrics snapshot.
+- `/api/observability/alerts` applies the tiny rules engine and returns active +
+  resolved alerts.
+
+## Scenario
+
+Midway through the time series, a synthetic traffic spike hits:
+
+- throughput jumps
+- CPU + memory climb
+- p95 latency stretches
+- error rate creeps upward
+
+This is the same incident explored from other angles: the Bottleneck Dashboard
+covers query behavior, the Scaling Simulator explores capacity response, and the
+Chaos Room injects the failure. Observability Hub is how you **see** it.
+
+## What to watch
+
+1. **Replica & capacity** – how tightly (or loosely) does capacity follow load?
+2. **CPU/memory** – look for volatility vs. calm regions.
+3. **p95 latency** – the easiest place to see user experience degrade.
+4. **Logs** – every WARN/ERROR lines up with the metric story.
+5. **Alerts** – the rules are transparent, so you can discuss tradeoffs without
+   black boxes.
+
+## Reflection
+
+Observability isn't about knowing everything; it's about reducing the surface
+area of confusion when something goes sideways. This hub completes the story you
+kicked off with the earlier labs: latency, chaos, bottlenecks, scaling—and now,
+observability.
