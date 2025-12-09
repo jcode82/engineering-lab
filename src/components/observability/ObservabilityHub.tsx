@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import {
   LineChart,
   Line,
@@ -45,6 +46,8 @@ export default function ObservabilityHub() {
   const [logs, setLogs] = useState<LogsResponse | null>(null);
   const [alerts, setAlerts] = useState<AlertsResponse | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [pageVisible, setPageVisible] = useState(true);
+  const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.2 });
 
   async function refreshAll() {
     const [m, l, a] = await Promise.all([
@@ -61,18 +64,34 @@ export default function ObservabilityHub() {
   }
 
   useEffect(() => {
+    const handleVisibility = () => {
+      setPageVisible(!document.hidden);
+    };
+    handleVisibility();
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
+  useEffect(() => {
     refreshAll();
-    if (!autoRefresh) return;
+  }, []);
+
+  useEffect(() => {
+    if (!autoRefresh || !inView || !pageVisible) return;
+    refreshAll();
     const id = setInterval(refreshAll, 10_000);
     return () => clearInterval(id);
-  }, [autoRefresh]);
+  }, [autoRefresh, inView, pageVisible]);
 
   const series = metrics?.series ?? [];
   const activeAlerts = alerts?.alerts.filter((a) => a.active) ?? [];
   const resolvedAlerts = alerts?.alerts.filter((a) => !a.active) ?? [];
 
   return (
-    <div className="mt-8 rounded-[32px] border border-[var(--border)]/80 bg-[var(--surface)]/80 dark:bg-black/40 backdrop-blur-xl p-6 md:p-8 shadow-[0_20px_80px_rgba(15,23,42,0.45)] space-y-6">
+    <div
+      ref={ref}
+      className="mt-8 rounded-[32px] border border-[var(--border)]/80 bg-[var(--surface)]/80 dark:bg-black/40 backdrop-blur-xl p-6 md:p-8 shadow-[0_20px_80px_rgba(15,23,42,0.45)] space-y-6"
+    >
       <header className="space-y-3">
         <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">
           LAB-57 • Observability Hub

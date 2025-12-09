@@ -9,7 +9,7 @@ export default function About() {
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.12] lg:opacity-[0.18] mix-blend-screen"
           style={{
-            backgroundImage: "url(/images/cyber_brain.jpg)",
+            backgroundImage: "url(/images/abstract_wave_1.webp)",
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "grayscale(20%)",
