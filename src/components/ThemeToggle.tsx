@@ -2,17 +2,19 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react"; // tiny icon library
 
+type ThemeMode = "light" | "dark";
+
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<ThemeMode>("dark");
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme") || "light";
+    const stored = (localStorage.getItem("theme") as ThemeMode | null) || "dark";
     setTheme(stored);
     document.documentElement.classList.toggle("dark", stored === "dark");
   }, []);
 
   const toggle = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
+    const newTheme: ThemeMode = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");

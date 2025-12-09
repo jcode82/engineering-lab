@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={`${inter.className} bg-[radial-gradient(circle_at_50%_50%,_rgba(37,99,235,0.05),_transparent_70%)] 
               dark:bg-[radial-gradient(circle_at_50%_50%,_rgba(37,99,235,0.15),_transparent_80%)] 
               text-foreground`}>
