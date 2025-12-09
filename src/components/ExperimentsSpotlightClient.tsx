@@ -24,7 +24,7 @@ export default function ClientExperimentsSpotlight({
       className="relative py-12"
       style={{
         backgroundImage:
-          "linear-gradient(180deg, rgba(10,15,23,0.9), rgba(10,15,23,0.95)), url(/images/lab_desk_1.png)",
+          "linear-gradient(180deg, rgba(10,15,23,0.9), rgba(10,15,23,0.95)), url(/images/lab_desk_v2.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
