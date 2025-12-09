@@ -37,11 +37,11 @@ export default function ClientExperimentsSpotlight({
             Experiments Spotlight
           </h2>
           <p className="text-sm text-[var(--muted)]">
-            Fresh dispatches from the Engineering Lab, presented as a coverflow.
+            Fresh dispatches from the Engineering Lab, capturing the latest activity, prototype work, and real-world engineering lessons.
           </p>
         </div>
 
-        <div className="relative mt-4 h-[420px]" style={{ perspective: "1400px" }}>
+        <div className="relative mt-4 h-[420px]" style={{ perspective: "1400px", overflow: "hidden" }}>
           {experiments.map((experiment, i) => {
             const offset = i - index;
             const translateX = offset * 220;
@@ -53,9 +53,9 @@ export default function ClientExperimentsSpotlight({
               <Link
                 key={experiment.slug}
                 href={`/experiments/${experiment.slug}`}
-                className="absolute left-1/2 w-64 md:w-72 -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/10 bg-black/60 p-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:border-cyan-300/70"
+                className="absolute left-1/2 top-1/2 w-64 md:w-72 rounded-3xl border border-white/10 bg-black/60 p-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:border-cyan-300/70"
                 style={{
-                  transform: `translateX(${translateX}px) scale(${scale}) rotateY(${rotateY}deg)`,
+                  transform: `translate3d(-50%, -50%, 0) translateX(${translateX}px) scale(${scale}) rotateY(${rotateY}deg)`,
                   opacity,
                   zIndex: experiments.length - Math.abs(offset),
                 }}
