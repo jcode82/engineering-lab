@@ -3,7 +3,19 @@ import Reveal from "@/components/Reveal";
 
 export default function About() {
   return (
-    <SectionWrapper id="about">
+    <SectionWrapper id="about" className="overflow-hidden">
+      {/* <div className="relative"> */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.12] lg:opacity-[0.18] mix-blend-screen"
+          style={{
+            backgroundImage: "url(/images/abstract_wave_1.webp)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "grayscale(20%)",
+          }}
+        />
+        <div className="relative space-y-6">
       <Reveal>
         <h2 className="text-h2 heading-spacing">About</h2>
       </Reveal>
@@ -46,7 +58,8 @@ export default function About() {
           </span>
         ))}
       </div>
-
+        </div>
+      {/* </div> */}
     </SectionWrapper>
   );
 }
