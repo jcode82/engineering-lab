@@ -46,10 +46,11 @@ export default function LabDashboard() {
       className="relative margin-bottom-15px overflow-hidden rounded-none min-h-[700px] md:h-[700px]"
       style={{
         backgroundImage: "url('/images/lab_desk_v2.jpg')",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
         backgroundAttachment: isIOS ? "scroll" : "fixed",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "top center",
+        backgroundSize: isIOS ? "contain" : "cover",
+        backgroundColor: isIOS ? "rgba(0,0,0,0.4)" : "transparent",
       }}
     >
       <div className="absolute inset-0 bg-[var(--surface)]/45" aria-hidden />
