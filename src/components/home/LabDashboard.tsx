@@ -28,7 +28,7 @@ function useIsIOS() {
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
-    const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+    const ua = navigator.userAgent || navigator.vendor || "";
     const appleDevice =
       /iPhone|iPad|iPod/i.test(ua) ||
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -296,7 +296,12 @@ function Dial({ label, value, color }: { label: string; value: number; color: st
 // ---------------------------------------------------------------
 function MiniTimeline({ cpu, mem }: { cpu: number; mem: number }) {
   const bars = useMemo(
-    () => Array.from({ length: 24 }).map(() => 20 + Math.random() * 40),
+    () => {
+      const intensity = Math.min(1, (cpu + mem) / 200);
+      return Array.from({ length: 24 }).map(
+        () => 20 + Math.random() * (20 + intensity * 40),
+      );
+    },
     [cpu, mem],
   );
   const glow = cpu > 60 || mem > 70;
