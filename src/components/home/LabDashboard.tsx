@@ -43,7 +43,7 @@ export default function LabDashboard() {
 
   return (
     <section
-      className="relative my-32 overflow-hidden rounded-none min-h-[700px] md:h-[700px]"
+      className="relative margin-bottom-15px overflow-hidden rounded-none min-h-[700px] md:h-[700px]"
       style={{
         backgroundImage: "url('/images/lab_desk_v2.jpg')",
         backgroundAttachment: isIOS ? "scroll" : "fixed",
