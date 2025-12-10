@@ -43,14 +43,13 @@ export default function LabDashboard() {
 
   return (
     <section
-      className="relative margin-bottom-15px overflow-hidden rounded-none min-h-[700px] md:h-[700px]"
+      className="relative my-32 overflow-hidden rounded-none min-h-[700px] md:h-[700px]"
       style={{
         backgroundImage: "url('/images/lab_desk_v2.jpg')",
         backgroundAttachment: isIOS ? "scroll" : "fixed",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "top center",
-        backgroundSize: isIOS ? "contain" : "cover",
-        backgroundColor: isIOS ? "rgba(0,0,0,0.4)" : "transparent",
+        backgroundSize: "cover",
+        backgroundPosition: isIOS ? "center 35%" : "center",
       }}
     >
       <div className="absolute inset-0 bg-[var(--surface)]/45" aria-hidden />
@@ -173,18 +172,22 @@ function ReactorPulse({ cpu, mem }: { cpu: number; mem: number }) {
 
   return (
     <div className="relative flex h-24 items-center justify-center">
-      <div
-        className="h-20 w-20 rounded-full blur-xl transition-transform duration-700 ease-out"
-        style={{
-          background: "rgba(56,189,248,0.35)",
-          transform: `scale(${1 + intensity * 0.25})`,
-        }}
-      />
+      <div className="relative h-20 w-20 overflow-hidden rounded-full">
+        <div
+          className="absolute inset-0 blur-xl transition-transform duration-700 ease-out"
+          style={{
+            background: "rgba(56,189,248,0.35)",
+            transform: `scale(${1 + intensity * 0.25})`,
+            WebkitMaskImage: "-webkit-radial-gradient(white, transparent)",
+          }}
+        />
+      </div>
       <div
         className="absolute h-12 w-12 rounded-full blur-md opacity-70"
         style={{
           background: "rgba(34,211,238,0.45)",
           animation: "pulse 2.5s ease-in-out infinite",
+          WebkitMaskImage: "-webkit-radial-gradient(white, transparent)",
         }}
       />
     </div>
