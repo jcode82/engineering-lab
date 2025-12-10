@@ -23,7 +23,24 @@ const INITIAL_DATA: DashboardData = {
   errors: [],
 };
 
+function useIsIOS() {
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator === "undefined") return;
+    const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+    const appleDevice =
+      /iPhone|iPad|iPod/i.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    setIsIOS(appleDevice);
+  }, []);
+
+  return isIOS;
+}
+
 export default function LabDashboard() {
+  const isIOS = useIsIOS();
+
   return (
     <section
       className="relative margin-bottom-15px overflow-hidden rounded-none min-h-[700px] md:h-[700px]"
@@ -32,10 +49,10 @@ export default function LabDashboard() {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
-        backgroundAttachment: "fixed",
+        backgroundAttachment: isIOS ? "scroll" : "fixed",
       }}
     >
-      <div className="absolute inset-0 bg-[var(--surface)]/50" aria-hidden />
+      <div className="absolute inset-0 bg-[var(--surface)]/45" aria-hidden />
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-16">
         <DashboardContent />
       </div>
