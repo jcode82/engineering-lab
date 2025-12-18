@@ -1,0 +1,218 @@
+---
+title: "When Types Lie: Supabase, Next.js Server Actions, and the `never` Trap"
+date: "2025-12-15"
+project: "TimeBookt"
+tags:
+  - typescript
+  - supabase
+  - nextjs
+  - saas
+  - engineering-notes
+summary: "A real-world case study of a Supabase + Next.js type-system failure that blocked a core SaaS feature—and how routing around the type system led to a better architecture."
+---
+
+## Context
+
+While building the early foundation of **TimeBookt**, I hit a hard blocker implementing something deceptively simple:
+
+> **Create an appointment record.**
+
+The domain logic was clean.  
+The database schema was correct.  
+The Supabase client was typed with generated `Database` types.
+
+And yet the system refused to build.
+
+---
+
+## The Symptom
+
+Every attempt to create an appointment failed during the Next.js build with variations of:
+
+```txt
+Type error: No overload matches this call
+Argument of type X is not assignable to parameter of type never
+```
+
+This wasn’t a runtime error.
+This wasn’t a schema mismatch.
+
+The application **would not compile**.
+
+> ⚠️ **Important:** once TypeScript reports that your payload must be `never`, you are no longer debugging business logic. You are debugging a collapsed generic.
+
+---
+
+## What the Code Looked Like (Simplified)
+
+```ts
+const payload: TablesInsert<"appointments"> = {
+  business_id: input.businessId,
+  customer_id: input.customerId,
+  service_id: input.serviceId,
+  start_time: input.startTime,
+  end_time: input.endTime,
+};
+
+await supabase
+  .from("appointments")
+  .insert(payload)
+  .select()
+  .single();
+```
+
+Everything here is correct.
+
+Yet `.insert()` was typed as:
+
+```ts
+insert(values: never | never[])
+```
+
+No amount of payload correctness could satisfy that.
+
+---
+
+## The Failure Diagram (What Actually Broke)
+
+```text
+┌──────────────────────────┐
+│ SupabaseClient<Database> │
+└─────────────┬────────────┘
+              │
+              ▼
+      .from("appointments")
+              │
+              ▼
+┌──────────────────────────┐
+│ PostgrestQueryBuilder<T> │
+└─────────────┬────────────┘
+              │
+      ❌ Generic inference fails
+              │
+              ▼
+┌──────────────────────────┐
+│ PostgrestQueryBuilder<❌>│
+│ PostgrestQueryBuilder<never>
+└─────────────┬────────────┘
+              │
+              ▼
+        .insert(values: never)
+```
+
+> 💡 **Key insight:** once Supabase’s internal builder collapses to `never`, the type system cannot be recovered downstream. Generics, casts, and payload fixes no longer help.
+
+---
+
+## Root Cause (The Uncomfortable Truth)
+
+This is a **known edge case** in the Supabase JS typings when used with:
+
+* Next.js (App Router)
+* Server Actions
+* Strict build environments (Vercel)
+* Generated database types
+
+Supabase’s mutation typings rely on fragile conditional inference.
+
+If table inference fails **once**, all mutation methods collapse to `never`:
+
+* `.insert()` → `never`
+* `.update()` → `never`
+* `.upsert()` → `never`
+
+At runtime, the database would accept the write.
+The failure is **entirely static**.
+
+---
+
+## Why This Is So Confusing
+
+* The schema is correct
+* The client is typed correctly
+* Reads (`select`) still work
+* Errors look like payload issues
+
+> ⚠️ This creates a dangerous illusion: it feels like *you* are wrong, when in reality the type system has already given up.
+
+---
+
+## The Options (What Real Teams Actually Do)
+
+Once this edge is hit, there are only three sane paths forward.
+
+---
+
+### Option 1 — Cast the Mutation Boundary (Short-Term)
+
+```ts
+await supabase
+  .from("appointments")
+  .insert(payload as any);
+```
+
+> 💡 Acceptable early on. Safe at runtime. Ugly but effective.
+
+---
+
+### Option 2 — Move Writes to SQL RPC (Chosen Path)
+
+Define database functions:
+
+```sql
+create function create_appointment(...) returns appointments
+```
+
+Call them from the app:
+
+```ts
+await supabase.rpc("create_appointment", { ... });
+```
+
+**Why this is better long-term:**
+
+* No Supabase mutation typings involved
+* Strong transactional guarantees
+* Business rules live in the database
+* Works cleanly with RLS
+* Scales better as complexity grows
+
+> ✅ This is the pattern many mature Supabase-backed SaaS products end up with anyway.
+
+---
+
+### Option 3 — Edge Functions for Writes
+
+Another valid approach: treat Supabase JS as a transport layer and push all writes into Edge Functions.
+
+---
+
+## The Architectural Lesson
+
+This experience reinforced a rule I now follow:
+
+> **Supabase JS is excellent for reads.
+> Writes should be explicit, isolated, and defensive.**
+
+Type systems are tools — not sources of truth.
+When the compiler lies, experienced engineers don’t argue forever. They move the boundary.
+
+---
+
+## Outcome
+
+* Appointment creation moved to **RPC-based writes**
+* Domain logic stayed clean and typed
+* Build unblocked
+* System architecture improved earlier than planned
+
+What felt like a setback turned into an architectural upgrade.
+
+---
+
+## Closing Thought
+
+Simple features often expose the deepest abstraction cracks.
+
+When that happens, the lesson isn’t “pick a different stack.”
+The lesson is **learn where the stack bends — and design accordingly**.
