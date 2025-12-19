@@ -56,16 +56,17 @@ export default function Header() {
   };
 
   const makeLink = (id: string) => (
-    <a
+    <Link
       key={id}
-      href={`#${id}`}
+      href={`/#${id}`}
       onClick={() => setOpen(false)}
       className={`${linkBase} ${
         active === id ? "text-primary-500 font-semibold" : "text-foreground"
       }`}
+      scroll
     >
       {labelMap[id] ?? id}
-    </a>
+    </Link>
   );
 
   return (
