@@ -19,6 +19,12 @@ const TYPE_LABELS: Record<PostKind, string> = {
   "case-study": "Case Study",
 };
 
+const BACK_LINKS: Record<PostKind, { href: string; label: string }> = {
+  experiment: { href: "/#experiments", label: "Back to Experiments" },
+  note: { href: "/#notes", label: "Back to Notes" },
+  "case-study": { href: "/#case-studies", label: "Back to Case Studies" },
+};
+
 interface ArticleLayoutProps {
   title: string;
   date?: string;
@@ -56,6 +62,20 @@ export default function ArticleLayout({
       <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,_720px)_260px] lg:justify-center">
           <div>
+            {kind && BACK_LINKS[kind] && (
+              <div className="mb-4">
+                <Link
+                  href={BACK_LINKS[kind].href}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-primary-300 hover:text-primary-200 transition"
+                >
+                  <span aria-hidden className="text-lg">
+                    ←
+                  </span>
+                  {BACK_LINKS[kind].label}
+                </Link>
+              </div>
+            )}
+
             {/* HEADER BLOCK */}
             <div
               className="mb-14 rounded-3xl border border-[var(--border)]/80 
